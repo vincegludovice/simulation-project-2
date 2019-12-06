@@ -369,6 +369,13 @@ svg {
   /* margin-top: -64px; */
   padding-top: 50px;
 }
+.price-chart-element:last-of-type {
+  width: 100% !important;
+  padding-left: 0 !important;
+}
+.price-chart-foot {
+  height: 0 !important;
+}
 .card-info-element {
   align-self: center;
   display: inline-block;
@@ -393,6 +400,9 @@ svg {
 }
 .infot {
   text-align: left;
+}
+.price-chart {
+  height: 570px !important;
 }
 .card-info-value {
   display: inline-block;
@@ -479,7 +489,11 @@ svg {
   top: 20px;
   left: calc(50% - 40px);
 }
-
+.price-chart-sec {
+  top: auto !important;
+  bottom: auto !important;
+  padding: 0;
+}
 .card-assignment-icon:before {
   content: "";
   position: absolute;

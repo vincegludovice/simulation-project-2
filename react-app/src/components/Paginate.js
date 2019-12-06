@@ -12,7 +12,7 @@ export default function Paginate(props) {
         activePage={props.page}
         onPageChange={onChanges}
         totalPages={Math.floor(620 / (props.age / 10))}
-        ellipsisItem={null}
+        ellipsisItem={"..."}
       />
     </div>
   );

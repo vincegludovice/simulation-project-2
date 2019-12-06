@@ -230,7 +230,7 @@ export default function Content(props) {
             </article>
           );
         })}
-        <article id="card_2" class="card assignment-card course-id-4 cus">
+        {/* <article id="card_2" class="card assignment-card course-id-4 cus">
           <header class="card-header card-backgrund-color">
             <h2 class="upp">XRP&nbsp; (xrp)</h2>
           </header>
@@ -270,7 +270,7 @@ export default function Content(props) {
               </div>
             </div>
           </section>
-        </article>
+        </article> */}
         {/* <article className="card assignment-card course-id-1">
           <header className="card-header card-backgrund-color">
             <h2>Eksamensopgave</h2>
