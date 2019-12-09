@@ -2,15 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ReactHtmlParser from "react-html-parser";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Label
-} from "recharts";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -19,25 +10,10 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Price from "./Price";
-
-function CustomizedAxisTick({ x, y, payload }) {
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <text
-        x={0}
-        y={0}
-        dy={16}
-        textAnchor="end"
-        fill="#666"
-        transform="rotate(-35)"
-      >
-        {payload.value}
-      </text>
-    </g>
-  );
-}
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+import { formatter, circulatingFormat } from "./Content";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+function TabPanel({ children, value, index, ...other }) {
   return (
     <Typography
       component="div"
@@ -76,90 +52,263 @@ export default function Chart() {
   };
   let { id } = useParams();
   const [coin, setCoin] = useState([]);
+  const [rank, setRank] = useState([]);
   const [image, setImage] = useState([]);
+  const [symbol, setSymbol] = useState([]);
   const [price, setPrice] = useState([]);
+  const [circulatingSupply, setCirculatingSupply] = useState([]);
   const [marketCap, setmarketCap] = useState([]);
-  const [marketExchange, setMarketExchange] = useState([]);
-  const [publicInterest, setpublicInterest] = useState([]);
-  const [lastUpdate, setLastUpdate] = useState([]);
-  const [marketExchangePercent, setMarketExchangePercent] = useState([]);
+  const [ath, setAth] = useState([]);
+  const [atl, setAtl] = useState([]);
+  const [oneHourChange, setOneHourChange] = useState([]);
+  const [twoFourHourChange, setTwoFourHourChange] = useState([]);
+  const [sevenDaysChange, setSevenDaysChange] = useState([]);
+  const [fourteenDaysChange, setFourteenDaysChange] = useState([]);
+  const [thirtyDaysChange, setThirtyDaysChange] = useState([]);
+  const [oneYearChange, setOneYearChange] = useState([]);
+  const [totalVolume, setTotalVolume] = useState([]);
+  const [totalSupply, setTotalSupply] = useState([]);
+  const [coinGeckoRank, setCoinGeckoRank] = useState([]);
+  const [coinGeckoScore, setCoinGeckoScore] = useState([]);
   const [description, setDescription] = useState([]);
-  const [historicalPrice, setHistoricalPrice] = useState([]);
   useEffect(() => {
     axios.get(`https://api.coingecko.com/api/v3/coins/${id}`).then(response => {
+      console.log(response.data);
       setCoin(response.data.name);
+      setRank(response.data.market_cap_rank);
+      setSymbol(response.data.symbol);
       setImage(response.data.image.large);
       setDescription(response.data.description.en);
       setPrice(response.data.market_data.current_price.usd);
-      // setpublicInterest(response.data.public_interest_score);
-      // setLastUpdate(response.data.last_updated);
-      // setmarketCap(response.data.market_data.market_cap.usd);
-      // setMarketExchange(response.data.market_data.market_cap_change_24h);
-      // setMarketExchangePercent(
-      //   response.data.market_data.market_cap_change_percentage_24h
-      // );
+      setCirculatingSupply(response.data.market_data.circulating_supply);
+      setAth(response.data.market_data.ath.usd);
+      setAtl(response.data.market_data.atl.usd);
+      setmarketCap(response.data.market_data.market_cap.usd);
+      setOneHourChange(
+        response.data.market_data.price_change_percentage_1h_in_currency.usd
+      );
+      setTwoFourHourChange(
+        response.data.market_data.price_change_percentage_24h
+      );
+      setSevenDaysChange(response.data.market_data.price_change_percentage_7d);
+      setFourteenDaysChange(
+        response.data.market_data.price_change_percentage_14d
+      );
+      setThirtyDaysChange(
+        response.data.market_data.price_change_percentage_30d
+      );
+      setOneYearChange(response.data.market_data.price_change_percentage_1y);
+      setTotalVolume(response.data.market_data.total_volume.usd);
+      setTotalSupply(response.data.market_data.total_supply);
+      setCoinGeckoRank(response.data.coingecko_rank);
+      setCoinGeckoScore(response.data.coingecko_score);
     });
   }, [id]);
   return (
     <div className="container h-full md:pb-40 pt-24 px-4 flex items-center custom">
       <div className="flex flex-wrap md:h-full items-center w-full flex-custom">
-        {/* <div className="w-full md:w-1/2 md:pr-4 pb-16 md:pb-0">
-          <h1 className="text-white font-bold text-4xl leading-snug">{coin}</h1>
-          <p className="text-white md:mt-10 leading-loose">
-            {ReactHtmlParser(description)}
-          </p>
-        </div> */}
-        <article id="card_2" class="card assignment-card course-id-4 cus">
-          <header class="card-header card-backgrund-color">
-            <h2 class="upp">XRP&nbsp; (xrp)</h2>
+        <article
+          id="card_2"
+          className="card car assignment-card course-id-4 cus"
+        >
+          <header className="card-header card-backgrund-color">
+            <h2 className="upp">
+              {coin}&nbsp; {`(${symbol}) Stats`}
+            </h2>
           </header>
-          <section class="card-body cuts">
-            <div class="card-info infot">
-              <div class="card-info-element">
-                <img
-                  src="https://assets.coingecko.com/coins/images/44/large/xrp.png?1564480400"
-                  alt="Image"
-                />
+          <section className="card-body card-body-details elemente-cuts">
+            <div className="card-info infot card-info-details ">
+              <div className="card-info-element picto">
+                <img src={image} alt="Image" />
               </div>
-              <div class="card-info-element">
-                <div>
-                  <div class="card-info-value">Rank:</div>
-                  <div class="card-info-description">&nbsp;&nbsp;3</div>
-                </div>
-                <div>
-                  <div class="card-info-value">Current Price:</div>
-                  <div class="card-info-description">&nbsp;&nbsp;$0.22</div>
-                </div>
-                <div>
-                  <div class="card-info-value">Circulating Supply:</div>
-                  <div class="card-info-description">
-                    &nbsp;&nbsp;43,299,885,509
+              <div className="card-info-element elemente">
+                <div className="card-info-part">
+                  <div>
+                    <div className="card-info-value">1h:</div>
+                    <div
+                      className={`card-info-description ${
+                        oneHourChange > 0 ? "green" : "red"
+                      }`}
+                    >
+                      &nbsp;&nbsp;
+                      {oneHourChange > 0 ? (
+                        <ExpandLessIcon className="bttom" />
+                      ) : (
+                        <ExpandMoreIcon className="bttom" />
+                      )}
+                      {`${(Math.round(oneHourChange * 100) / 100).toFixed(2)}%`}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">24h:</div>
+                    <div
+                      className={`card-info-description ${
+                        twoFourHourChange > 0 ? "green" : "red"
+                      }`}
+                    >
+                      {twoFourHourChange > 0 ? (
+                        <ExpandLessIcon className="bttom" />
+                      ) : (
+                        <ExpandMoreIcon className="bttom" />
+                      )}
+                      {`${(Math.round(twoFourHourChange * 100) / 100).toFixed(
+                        2
+                      )}%`}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">7d:</div>
+                    <div
+                      className={`card-info-description ${
+                        sevenDaysChange > 0 ? "green" : "red"
+                      }`}
+                    >
+                      &nbsp;&nbsp;
+                      {sevenDaysChange > 0 ? (
+                        <ExpandLessIcon className="bttom" />
+                      ) : (
+                        <ExpandMoreIcon className="bttom" />
+                      )}
+                      {`${(Math.round(sevenDaysChange * 100) / 100).toFixed(
+                        2
+                      )}%`}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">14d:</div>
+                    <div
+                      className={`card-info-description ${
+                        fourteenDaysChange > 0 ? "green" : "red"
+                      }`}
+                    >
+                      {fourteenDaysChange > 0 ? (
+                        <ExpandLessIcon className="bttom" />
+                      ) : (
+                        <ExpandMoreIcon className="bttom" />
+                      )}
+                      {`${(Math.round(fourteenDaysChange * 100) / 100).toFixed(
+                        2
+                      )}%`}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">30d:</div>
+                    <div
+                      className={`card-info-description ${
+                        thirtyDaysChange > 0 ? "green" : "red"
+                      }`}
+                    >
+                      {thirtyDaysChange > 0 ? (
+                        <ExpandLessIcon className="bttom" />
+                      ) : (
+                        <ExpandMoreIcon className="bttom" />
+                      )}
+                      {`${(Math.round(thirtyDaysChange * 100) / 100).toFixed(
+                        2
+                      )}%`}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">1y:</div>
+                    <div
+                      className={`card-info-description ${
+                        oneYearChange > 0 ? "green" : "red"
+                      }`}
+                    >
+                      &nbsp;&nbsp;
+                      {oneYearChange > 0 ? (
+                        <ExpandLessIcon className="bttom" />
+                      ) : (
+                        <ExpandMoreIcon className="bttom" />
+                      )}
+                      {`${(Math.round(oneYearChange * 100) / 100).toFixed(2)}%`}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div class="card-info-value">Market Cap:</div>
-                  <div class="card-info-description">
-                    &nbsp;&nbsp;$9,722,623,176.00
+                <div className="card-info-part">
+                  <div>
+                    <div className="card-info-value">Market Cap Rank:</div>
+                    <div className="card-info-description">
+                      &nbsp;&nbsp;{rank}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">Current Price:</div>
+                    <div className={`card-info-description ${0 ? "" : ""}`}>
+                      &nbsp;&nbsp; {formatter.format(price)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">Circulating Supply:</div>
+                    <div className="card-info-description">
+                      &nbsp;&nbsp;
+                      {circulatingFormat(Math.round(circulatingSupply))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">Market Cap:</div>
+                    <div className="card-info-description">
+                      &nbsp;&nbsp;${circulatingFormat(Math.round(marketCap))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">All Time High Price:</div>
+                    <div className="card-info-description">
+                      &nbsp;&nbsp;{formatter.format(ath)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">All Time Low Price:</div>
+                    <div className="card-info-description">
+                      &nbsp;&nbsp;{formatter.format(atl)}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div class="card-info-value">All Time High Price:</div>
-                  <div class="card-info-description">&nbsp;&nbsp;$3.40</div>
+                <div className="card-info-part">
+                  <div>
+                    <div className="card-info-value">Trading Volume:</div>
+                    <div className="card-info-description">
+                      &nbsp;&nbsp;${circulatingFormat(Math.round(totalVolume))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">Total Supply:</div>
+                    <div className="card-info-description">
+                      &nbsp;&nbsp;
+                      {totalSupply ? circulatingFormat(totalSupply) : 0}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">Coin Gecko Rank:</div>
+                    <div className={`card-info-description ${0 ? "" : ""}`}>
+                      &nbsp;&nbsp; {coinGeckoRank}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="card-info-value">Coin Gecko Score:</div>
+                    <div className={`card-info-description ${0 ? "" : ""}`}>
+                      &nbsp;&nbsp;
+                      {`${(Math.round(coinGeckoScore * 100) / 100).toFixed(
+                        2
+                      )}%`}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
+          <footer className="price-chart-foot"></footer>
         </article>
         <article
           id="card_2"
-          class="card assignment-card cus course-id-3 price-chart"
+          className="card car assignment-card cus course-id-3 price-chart"
         >
-          <header class="card-header card-backgrund-color">
-            <h2 class="upp">Historical Chart</h2>
+          <header className="card-header card-backgrund-color">
+            <h2 className="upp">Historical Chart</h2>
           </header>
-          <section class="card-body price-chart-sec">
-            <div class="card-info infot">
-              <div class="card-info-element price-chart-element">
+          <section className="card-body price-chart-sec">
+            <div className="card-info infot">
+              <div className="card-info-element price-chart-element">
                 <div className={classes.root}>
                   <AppBar
                     position="static"
@@ -186,22 +335,46 @@ export default function Chart() {
                     </Tabs>
                   </AppBar>
                   <TabPanel value={value} index={0}>
-                    <Price length={"1"} />
+                    <Price
+                      length={"1"}
+                      formatter={formatter}
+                      circulatingFormat={circulatingFormat}
+                    />
                   </TabPanel>
                   <TabPanel value={value} index={1}>
-                    <Price length={"7"} />
+                    <Price
+                      length={"7"}
+                      formatter={formatter}
+                      circulatingFormat={circulatingFormat}
+                    />
                   </TabPanel>
                   <TabPanel value={value} index={2}>
-                    <Price length={"30"} />
+                    <Price
+                      length={"30"}
+                      formatter={formatter}
+                      circulatingFormat={circulatingFormat}
+                    />
                   </TabPanel>
                   <TabPanel value={value} index={3}>
-                    <Price length={"180"} />
+                    <Price
+                      length={"180"}
+                      formatter={formatter}
+                      circulatingFormat={circulatingFormat}
+                    />
                   </TabPanel>
                   <TabPanel value={value} index={4}>
-                    <Price length={"365"} />
+                    <Price
+                      length={"365"}
+                      formatter={formatter}
+                      circulatingFormat={circulatingFormat}
+                    />
                   </TabPanel>
                   <TabPanel value={value} index={5}>
-                    <Price length={"max"} />
+                    <Price
+                      length={"max"}
+                      formatter={formatter}
+                      circulatingFormat={circulatingFormat}
+                    />
                   </TabPanel>
                 </div>
               </div>
@@ -209,6 +382,25 @@ export default function Chart() {
           </section>
           <footer className="card-footer price-chart-foot"></footer>
         </article>
+
+        {description ? (
+          <article
+            id="card_2"
+            className="card car assignment-card cus course-id-2"
+          >
+            <header className="card-header card-backgrund-color">
+              <h2 className="upp">Coin Description</h2>
+            </header>
+            <section className="card-body price-chart-desc">
+              <p className="text-black desc-loose">
+                {ReactHtmlParser(description)}
+              </p>
+            </section>
+            <footer className="card-footer price-chart-foot"></footer>
+          </article>
+        ) : (
+          <article></article>
+        )}
       </div>
     </div>
   );

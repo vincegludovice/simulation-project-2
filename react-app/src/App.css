@@ -250,7 +250,14 @@ svg {
   transition: transform 0.2s ease-in, box-shadow 0.1s ease-in;
   box-shadow: 0px 2px 2px #dfe6f0;
 }
-
+.custom .car {
+  margin: 20px 5px !important;
+}
+.custom .car:last-of-type {
+  min-height: 25px !important;
+  height: auto !important;
+  cursor: default;
+}
 @media (max-width: 340px) {
   .custom .card {
     margin: 20px calc(50% - 150px);
@@ -346,7 +353,6 @@ svg {
 .card-header > h2 {
   font-size: 16px;
   padding: 6px;
-  /* (30 - font-size) / 2 */
   color: white;
 }
 
@@ -368,6 +374,7 @@ svg {
   padding-left: 30px;
   /* margin-top: -64px; */
   padding-top: 50px;
+  padding-bottom: 10px;
 }
 .price-chart-element:last-of-type {
   width: 100% !important;
@@ -375,6 +382,24 @@ svg {
 }
 .price-chart-foot {
   height: 0 !important;
+  z-index: -1 !important;
+}
+.card-body-details {
+  top: auto !important;
+  bottom: auto !important;
+  padding: 0 !important;
+  padding-left: 10px !important;
+  margin-top: 0 !important;
+}
+.card-info-details {
+  height: 280px !important;
+  width: 100% !important;
+}
+.card-info-details .card-info-element:first-of-type {
+  padding-top: 45px !important;
+}
+.card-info-details .card-info-element:last-of-type {
+  padding-top: 0 !important;
 }
 .card-info-element {
   align-self: center;
@@ -389,7 +414,7 @@ svg {
   text-transform: uppercase;
   /* font-size: 10px; */
   font-weight: bold;
-  color: #b3bac1;
+  color: #000011;
   /* margin-bottom: 10px; */
   display: inline-block;
 }
@@ -397,12 +422,15 @@ svg {
   text-transform: uppercase;
   color: #576366 !important;
   font-weight: bold;
+  font-size: 20px !important;
+  margin-top: -4px !important;
 }
 .infot {
   text-align: left;
 }
 .price-chart {
-  height: 570px !important;
+  height: 650px !important;
+  padding-bottom: 100px !important;
 }
 .card-info-value {
   display: inline-block;
@@ -491,7 +519,7 @@ svg {
 }
 .price-chart-sec {
   top: auto !important;
-  bottom: auto !important;
+  bottom: 0 !important;
   padding: 0;
 }
 .card-assignment-icon:before {
@@ -554,4 +582,83 @@ svg {
   .container.custom {
     max-width: none !important;
   }
+}
+.MuiTypography-root.MuiTypography-body1 .MuiBox-root {
+  padding: 0 !important;
+}
+.time-hover {
+}
+.hover-custom-tooltip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border: 1px #b3bac1 solid;
+  padding: 10px;
+}
+.price-hover {
+  color: #532cdd;
+}
+.volume-hover {
+  color: #413ea0;
+}
+.footer-details {
+  height: 0 !important;
+}
+.bttom {
+  position: relative;
+  bottom: 2px;
+  right: -5px;
+}
+.info-price {
+  color: green;
+}
+.elemente {
+  width: 85% !important;
+  display: flex;
+  flex-direction: row;
+}
+.elemente-cuts {
+  width: 100% !important;
+}
+.picto {
+  width: 15% !important;
+}
+.card-info-details .elemente:nth-of-type(2) {
+  padding-left: 30px !important;
+}
+.elemente .card-info-part:nth-of-type(2) {
+  padding-left: 30px;
+}
+.elemente .card-info-part:first-of-type {
+  width: 20%;
+}
+.elemente .card-info-part:not(:first-of-type) {
+  width: 40%;
+}
+.elemente .card-info-part {
+  padding-top: 55px;
+  font-size: 20px;
+}
+.red {
+  color: red;
+}
+.green {
+  color: green;
+}
+.card-info .elemente:last-of-type {
+  padding-bottom: 0 !important;
+}
+.desc-loose {
+  text-align: justify;
+}
+.price-chart-desc {
+  top: auto !important;
+  bottom: auto !important;
+  padding: 70px 40px 20px;
+  position: relative;
+}
+.desc-loose > a {
+  color: blue;
 }

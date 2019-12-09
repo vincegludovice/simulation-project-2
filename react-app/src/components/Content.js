@@ -22,7 +22,14 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2)
   }
 }));
-
+export const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2
+});
+export const circulatingFormat = num => {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+};
 export default function Content(props) {
   const [data, setData] = React.useState([]);
   const classes = useStyles();
@@ -43,14 +50,6 @@ export default function Content(props) {
         setData(response.data);
       });
   }, [props.page, age, order]);
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2
-  });
-  const circulatingFormat = num => {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-  };
   const header = [
     "course-id-2",
     "course-id-1",
@@ -60,19 +59,6 @@ export default function Content(props) {
     "course-id-6",
     "course-id-7"
   ];
-  let { id } = useParams();
-  const descClick = id => {
-    console.log(id);
-    // axios.get(`https://api.coingecko.com/api/v3/coins/${id}`).then(response => {
-    //   console.log(response.data.description.en);
-    //   console.log(parse(response.data.description.en));
-    //   Swal.fire({
-    //     title: response.data.name,
-    //     text: ReactHtmlParser(response.data.description.en).join(""),
-    //     width: 1280
-    //   });
-    // });
-  };
   return (
     <div className="container h-full md:pb-40 pt-24 px-4 flex items-center custom">
       <div className="flex flex-wrap md:h-full items-center w-full flex-custom">
@@ -173,7 +159,7 @@ export default function Content(props) {
                     <div>
                       <div className="card-info-value">Rank:</div>
                       <div className="card-info-description">
-                        &nbsp;&nbsp;{data.market_cap_rank}
+                        &nbsp;&nbsp;{formatter.format(data.market_cap_rank)}
                       </div>
                     </div>
                     <div>

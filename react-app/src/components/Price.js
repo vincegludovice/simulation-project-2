@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
-  LineChart,
+  ComposedChart,
   Line,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -26,52 +27,105 @@ function CustomizedAxisTick({ x, y, payload }) {
     </g>
   );
 }
-export default function Chart({ length }) {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+  formatter,
+  circulatingFormat
+}) => {
+  if (active) {
+    return (
+      <div className="hover-custom-tooltip">
+        <p className="time-hover">{`${label}`}</p>
+        <p className="price-hover">
+          price: {`${payload ? formatter.format(payload[0].value) : ""}`}
+        </p>
+        <p className="volume-hover">
+          volume:{" "}
+          {`$${payload ? circulatingFormat(Math.round(payload[1].value)) : ""}`}
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+};
+export default function Chart({ length, formatter, circulatingFormat }) {
   let { id } = useParams();
-  const [historicalPrice, setHistoricalPrice] = useState([]);
+  const [historicalPrice, setHistoricalPrice] = useState();
   useEffect(() => {
     axios
       .get(
         `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${length}`
       )
       .then(response => {
-        console.log(response.data);
         setHistoricalPrice(
-          response.data.prices.map(price => {
+          response.data.prices.map((price, i) => {
             return {
               date:
                 length === "1"
                   ? new Date(price[0]).toLocaleTimeString("en-US")
                   : new Date(price[0]).toLocaleDateString("en-US"),
-              price: price[1]
+              price: price[1],
+              volume: response.data.total_volumes[i][1]
             };
           })
         );
       });
   }, [id]);
   return (
-    <LineChart
-      width={1200}
-      height={400}
+    <ComposedChart
+      width={1235}
+      height={545}
       data={historicalPrice}
       margin={{
         top: 30,
-        right: 30,
-        left: 20,
-        bottom: 45
+        right: 20,
+        bottom: 45,
+        left: 20
       }}
+      padding={0}
     >
       <CartesianGrid strokeDasharray="3 3" />
-      <YAxis type="number" domain={["auto", "auto"]} />
-      <XAxis dataKey="date" tick={<CustomizedAxisTick />} />
-      <Tooltip />
+      <YAxis
+        type="number"
+        dataKey="price"
+        domain={["auto", "auto"]}
+        padding={{ bottom: 125 }}
+      />
+      <YAxis
+        dataKey="volume"
+        yAxisId="left"
+        hide={true}
+        axisLine={false}
+        orientation="right"
+        domain={[0, dataMax => dataMax * 4]}
+        padding={{ bottom: 0 }}
+      />
+      <XAxis dataKey="date" tick={<CustomizedAxisTick />} hide={true} />
+      <Tooltip
+        content={
+          <CustomTooltip
+            formatter={formatter}
+            circulatingFormat={circulatingFormat}
+          />
+        }
+      />
       <Line
+        isAnimationActive={true}
         type="monotone"
         dataKey="price"
         stroke="#532cdd"
         dot={false}
         strokeWidth="2"
       />
-    </LineChart>
+      <Bar
+        dataKey="volume"
+        yAxisId="left"
+        fill="#413ea0"
+        domain={["auto", "auto"]}
+      />
+    </ComposedChart>
   );
 }
