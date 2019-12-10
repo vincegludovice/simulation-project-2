@@ -72,38 +72,62 @@ export default function Chart() {
   const [coinGeckoScore, setCoinGeckoScore] = useState([]);
   const [description, setDescription] = useState([]);
   useEffect(() => {
-    axios.get(`https://api.coingecko.com/api/v3/coins/${id}`).then(response => {
-      console.log(response.data);
-      setCoin(response.data.name);
-      setRank(response.data.market_cap_rank);
-      setSymbol(response.data.symbol);
-      setImage(response.data.image.large);
-      setDescription(response.data.description.en);
-      setPrice(response.data.market_data.current_price.usd);
-      setCirculatingSupply(response.data.market_data.circulating_supply);
-      setAth(response.data.market_data.ath.usd);
-      setAtl(response.data.market_data.atl.usd);
-      setmarketCap(response.data.market_data.market_cap.usd);
-      setOneHourChange(
-        response.data.market_data.price_change_percentage_1h_in_currency.usd
-      );
-      setTwoFourHourChange(
-        response.data.market_data.price_change_percentage_24h
-      );
-      setSevenDaysChange(response.data.market_data.price_change_percentage_7d);
-      setFourteenDaysChange(
-        response.data.market_data.price_change_percentage_14d
-      );
-      setThirtyDaysChange(
-        response.data.market_data.price_change_percentage_30d
-      );
-      setOneYearChange(response.data.market_data.price_change_percentage_1y);
-      setTotalVolume(response.data.market_data.total_volume.usd);
-      setTotalSupply(response.data.market_data.total_supply);
-      setCoinGeckoRank(response.data.coingecko_rank);
-      setCoinGeckoScore(response.data.coingecko_score);
-    });
+    setInterval(() => {
+      axios
+        .get(`https://api.coingecko.com/api/v3/coins/${id}`)
+        .then(response => {
+          console.log(response.data);
+          setCoin(response.data.name);
+          setRank(response.data.market_cap_rank);
+          setSymbol(response.data.symbol);
+          setImage(response.data.image.large);
+          setDescription(response.data.description.en);
+          setPrice(response.data.market_data.current_price.usd);
+          setCirculatingSupply(response.data.market_data.circulating_supply);
+          setAth(response.data.market_data.ath.usd);
+          setAtl(response.data.market_data.atl.usd);
+          setmarketCap(response.data.market_data.market_cap.usd);
+          setOneHourChange(
+            response.data.market_data.price_change_percentage_1h_in_currency.usd
+          );
+          setTwoFourHourChange(
+            response.data.market_data.price_change_percentage_24h
+          );
+          setSevenDaysChange(
+            response.data.market_data.price_change_percentage_7d
+          );
+          setFourteenDaysChange(
+            response.data.market_data.price_change_percentage_14d
+          );
+          setThirtyDaysChange(
+            response.data.market_data.price_change_percentage_30d
+          );
+          setOneYearChange(
+            response.data.market_data.price_change_percentage_1y
+          );
+          setTotalVolume(response.data.market_data.total_volume.usd);
+          setTotalSupply(response.data.market_data.total_supply);
+          setCoinGeckoRank(response.data.coingecko_rank);
+          setCoinGeckoScore(response.data.coingecko_score);
+        });
+    }, 1000);
   }, [id]);
+  function Change({ text, vari, space }) {
+    return (
+      <div>
+        <div className="card-info-value">{text} </div>
+        <div className={`card-info-description ${vari > 0 ? "green" : "red"}`}>
+          {space ? ReactHtmlParser("&nbsp;&nbsp;") : ""}
+          {vari > 0 ? (
+            <ExpandLessIcon className="bttom" />
+          ) : (
+            <ExpandMoreIcon className="bttom" />
+          )}
+          {`${(Math.round(vari * 100) / 100).toFixed(2)}%`}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="container h-full md:pb-40 pt-24 px-4 flex items-center custom">
       <div className="flex flex-wrap md:h-full items-center w-full flex-custom">
@@ -123,107 +147,12 @@ export default function Chart() {
               </div>
               <div className="card-info-element elemente">
                 <div className="card-info-part">
-                  <div>
-                    <div className="card-info-value">1h:</div>
-                    <div
-                      className={`card-info-description ${
-                        oneHourChange > 0 ? "green" : "red"
-                      }`}
-                    >
-                      &nbsp;&nbsp;
-                      {oneHourChange > 0 ? (
-                        <ExpandLessIcon className="bttom" />
-                      ) : (
-                        <ExpandMoreIcon className="bttom" />
-                      )}
-                      {`${(Math.round(oneHourChange * 100) / 100).toFixed(2)}%`}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="card-info-value">24h:</div>
-                    <div
-                      className={`card-info-description ${
-                        twoFourHourChange > 0 ? "green" : "red"
-                      }`}
-                    >
-                      {twoFourHourChange > 0 ? (
-                        <ExpandLessIcon className="bttom" />
-                      ) : (
-                        <ExpandMoreIcon className="bttom" />
-                      )}
-                      {`${(Math.round(twoFourHourChange * 100) / 100).toFixed(
-                        2
-                      )}%`}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="card-info-value">7d:</div>
-                    <div
-                      className={`card-info-description ${
-                        sevenDaysChange > 0 ? "green" : "red"
-                      }`}
-                    >
-                      &nbsp;&nbsp;
-                      {sevenDaysChange > 0 ? (
-                        <ExpandLessIcon className="bttom" />
-                      ) : (
-                        <ExpandMoreIcon className="bttom" />
-                      )}
-                      {`${(Math.round(sevenDaysChange * 100) / 100).toFixed(
-                        2
-                      )}%`}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="card-info-value">14d:</div>
-                    <div
-                      className={`card-info-description ${
-                        fourteenDaysChange > 0 ? "green" : "red"
-                      }`}
-                    >
-                      {fourteenDaysChange > 0 ? (
-                        <ExpandLessIcon className="bttom" />
-                      ) : (
-                        <ExpandMoreIcon className="bttom" />
-                      )}
-                      {`${(Math.round(fourteenDaysChange * 100) / 100).toFixed(
-                        2
-                      )}%`}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="card-info-value">30d:</div>
-                    <div
-                      className={`card-info-description ${
-                        thirtyDaysChange > 0 ? "green" : "red"
-                      }`}
-                    >
-                      {thirtyDaysChange > 0 ? (
-                        <ExpandLessIcon className="bttom" />
-                      ) : (
-                        <ExpandMoreIcon className="bttom" />
-                      )}
-                      {`${(Math.round(thirtyDaysChange * 100) / 100).toFixed(
-                        2
-                      )}%`}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="card-info-value">1y:</div>
-                    <div
-                      className={`card-info-description ${
-                        oneYearChange > 0 ? "green" : "red"
-                      }`}
-                    >
-                      &nbsp;&nbsp;
-                      {oneYearChange > 0 ? (
-                        <ExpandLessIcon className="bttom" />
-                      ) : (
-                        <ExpandMoreIcon className="bttom" />
-                      )}
-                      {`${(Math.round(oneYearChange * 100) / 100).toFixed(2)}%`}
-                    </div>
-                  </div>
+                  <Change text="1h:" vari={oneHourChange} space={true} />
+                  <Change text="24h:" vari={twoFourHourChange} space={false} />
+                  <Change text="7d:" vari={sevenDaysChange} space={true} />
+                  <Change text="14d:" vari={fourteenDaysChange} space={false} />
+                  <Change text="30d:" vari={thirtyDaysChange} space={false} />
+                  <Change text="1y:" vari={oneYearChange} space={true} />
                 </div>
                 <div className="card-info-part">
                   <div>
@@ -382,7 +311,6 @@ export default function Chart() {
           </section>
           <footer className="card-footer price-chart-foot"></footer>
         </article>
-
         {description ? (
           <article
             id="card_2"

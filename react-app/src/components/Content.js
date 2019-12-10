@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-// import MaterialTable from "material-table";
 import axios from "axios";
 import Paginate from "./Paginate";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,7 +6,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import { useParams, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -93,43 +92,6 @@ export default function Content(props) {
             </Select>
           </FormControl>
         </article>
-        {/* <div className="w-full md:w-1/2 md:pr-4 pb-16 md:pb-0">
-          <h1 className="text-white font-bold text-4xl leading-snug">
-            Use waves and
-            <br />
-            blobs to make your
-            <br />
-            designs more fun
-          </h1>
-
-          <p className="text-white md:mt-10 leading-loose">
-            Explore unique organic shapes with these tools and
-            <br />
-            give your design a fresh look.
-          </p>
-        </div> */}
-        {/* <div className="w-full flex marginLeft">
-          <div className="card">
-            <div className="illustration">
-              <MaterialTable
-                title="Editable Example"
-                columns={[
-                  { title: "Cryptocurrencies", field: "name" },
-                  {
-                    title: "Logo",
-                    render: rowData => (
-                      <img className="logo" src={rowData.image} alt="Img" />
-                    )
-                  },
-                  { title: "Symbol", field: "symbol" },
-                  { title: "Current Price", field: "current_price" }
-                ]}
-                data={data}
-              />
-            </div>
-          </div>
-        </div> */}
-
         {data.map((data, id) => {
           return (
             <article
@@ -147,13 +109,10 @@ export default function Content(props) {
                   {")"}
                 </h2>
               </header>
-
               <section className="card-body">
                 <div className="card-info infot">
                   <div className="card-info-element">
                     <img src={data.image} alt="Image" />
-                    {/* <div className="card-info-description">Nummer</div>
-        <div className="card-info-value">02</div> */}
                   </div>
                   <div className="card-info-element">
                     <div>
@@ -191,24 +150,16 @@ export default function Content(props) {
                       </div>
                     </div>
                   </div>
-
-                  {/* <div className="card-info-element">
-        <div className="card-info-description">Niveau</div>
-        <div className="card-info-value">
-          <span className="card-info-assignment-level">C</span>
-        </div>
-      </div> */}
                 </div>
-                {/* <p className="card-body-delimiter"></p>
-    <p className="card-tags">
-      <span className="card-tag card-backgrund-color">Tysk</span>
-      <span className="card-tag">STX</span>
-      <span className="card-tag">Eksamen</span>
-    </p> */}
               </section>
               <footer className="card-footer custom-foot">
                 <NavLink to={`/coin-details/${data.id}`}>
-                  <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+                  <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded">
+                    Buy/Sell
+                  </button>
+                </NavLink>
+                <NavLink to={`/coin-details/${data.id}`}>
+                  <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
                     View Details
                   </button>
                 </NavLink>
@@ -216,135 +167,6 @@ export default function Content(props) {
             </article>
           );
         })}
-        {/* <article id="card_2" class="card assignment-card course-id-4 cus">
-          <header class="card-header card-backgrund-color">
-            <h2 class="upp">XRP&nbsp; (xrp)</h2>
-          </header>
-          <section class="card-body">
-            <div class="card-info infot">
-              <div class="card-info-element">
-                <img
-                  src="https://assets.coingecko.com/coins/images/44/large/xrp.png?1564480400"
-                  alt="Image"
-                />
-              </div>
-              <div class="card-info-element">
-                <div>
-                  <div class="card-info-value">Rank:</div>
-                  <div class="card-info-description">&nbsp;&nbsp;3</div>
-                </div>
-                <div>
-                  <div class="card-info-value">Current Price:</div>
-                  <div class="card-info-description">&nbsp;&nbsp;$0.22</div>
-                </div>
-                <div>
-                  <div class="card-info-value">Circulating Supply:</div>
-                  <div class="card-info-description">
-                    &nbsp;&nbsp;43,299,885,509
-                  </div>
-                </div>
-                <div>
-                  <div class="card-info-value">Market Cap:</div>
-                  <div class="card-info-description">
-                    &nbsp;&nbsp;$9,722,623,176.00
-                  </div>
-                </div>
-                <div>
-                  <div class="card-info-value">All Time High Price:</div>
-                  <div class="card-info-description">&nbsp;&nbsp;$3.40</div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </article> */}
-        {/* <article className="card assignment-card course-id-1">
-          <header className="card-header card-backgrund-color">
-            <h2>Eksamensopgave</h2>
-          </header>
-          <section className="card-body">
-            <div className="card-info">
-              <div className="card-info-element">
-                <div className="card-info-description">Nummer</div>
-                <div className="card-info-value">02</div>
-              </div>
-              <div className="card-info-element">
-                <div className="card-info-description">Minutter</div>
-                <div className="card-info-value">5</div>
-              </div>
-              <div className="card-info-element">
-                <div className="card-info-description">Niveau</div>
-                <div className="card-info-value">
-                  <span className="card-info-assignment-level">B</span>
-                </div>
-              </div>
-            </div>
-            <p className="card-body-delimiter"></p>
-            <p className="card-tags">
-              <span className="card-tag card-backgrund-color">Engelsk</span>
-              <span className="card-tag">HF</span>
-              <span className="card-tag">Tværgående</span>
-            </p>
-          </section>
-        </article>
-
-        <article className="card assignment-card course-id-4">
-          <header className="card-header card-backgrund-color">
-            <h2>Eksamensopgave</h2>
-          </header>
-          <section className="card-body">
-            <div className="card-info">
-              <div className="card-info-element">
-                <div className="card-info-description">Nummer</div>
-                <div className="card-info-value">02</div>
-              </div>
-              <div className="card-info-element">
-                <div className="card-info-description">Minutter</div>
-                <div className="card-info-value">60</div>
-              </div>
-              <div className="card-info-element">
-                <div className="card-info-description">Niveau</div>
-                <div className="card-info-value">
-                  <span className="card-info-assignment-level">A</span>
-                </div>
-              </div>
-            </div>
-            <p className="card-body-delimiter"></p>
-            <p className="card-tags">
-              <span className="card-tag card-backgrund-color">Spansk</span>
-              <span className="card-tag">HHX</span>
-              <span className="card-tag">Eksamen</span>
-            </p>
-          </section>
-        </article>
-        <article className="card assignment-card course-id-1">
-          <header className="card-header card-backgrund-color">
-            <h2>Eksamensopgaver</h2>
-          </header>
-          <section className="card-body">
-            <div className="card-assignment-icon">
-              <span className="ml-document-checks"></span>
-            </div>
-            <div className="card-assignment-text">
-              Eksamensopgaverne er opbygget på baggrund af de seneste års
-              opgaver til eksamen.
-            </div>
-          </section>
-        </article>
-
-        <article className="card assignment-card course-id-1">
-          <header className="card-header card-backgrund-color">
-            <h2>Tværgående opgaver</h2>
-          </header>
-          <section className="card-body">
-            <div className="card-assignment-icon">
-              <span className="ml-check-cross"></span>
-            </div>
-            <div className="card-assignment-text">
-              Eksamensopgaverne er opbygget på baggrund af de seneste års
-              opgaver til eksamen.
-            </div>
-          </section>
-        </article> */}
         <Paginate {...props} age={age} />
       </div>
     </div>

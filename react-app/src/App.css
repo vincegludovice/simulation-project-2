@@ -15,6 +15,7 @@ body,
 * {
   font-family: "Rubik", sans-serif;
   box-sizing: inherit;
+  outline: none;
 }
 @media (min-width: 768px) {
   .md\:mt-10 {
@@ -661,4 +662,48 @@ svg {
 }
 .desc-loose > a {
   color: blue;
+}
+.custom-foot button:first-of-type {
+  margin-left: 10px;
+}
+.card-inv {
+  display: flex;
+  flex-direction: row;
+}
+/* .flist p {display:inline-block; width:110px;} */
+.flist p {
+  display: block;
+  font-size: 14px;
+  width: auto;
+}
+.card-inv .card-info {
+  height: 100% !important;
+}
+.card-inv .card-info .card-info-element .flist {
+  text-align: left;
+}
+.card-inv .card-info .card-info-element:first-of-type {
+  width: 100% !important;
+  /* background-color: green; */
+  padding-top: 0;
+}
+.card-inv .card-info .card-info-element {
+  align-self: auto;
+}
+.card-inv .card-info .card-info-element:last-of-type {
+  background: #dddfff;
+  width: 30% !important;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  right: 0;
+  font-size: 25px;
+  padding-left: 10px;
+  padding-top: 5px;
+}
+.buySellText {
+  margin-top: 15px;
+}
+.placehol {
+  width: 30%;
 }
