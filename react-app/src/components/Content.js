@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Paginate from "./Paginate";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,6 +7,61 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { NavLink } from "react-router-dom";
+import Swal from "sweetalert2";
+import TextField from "@material-ui/core/TextField";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import Modal from "@material-ui/core/Modal";
+import PropTypes from "prop-types";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+
+function rand() {
+  return Math.round(Math.random() * 20) - 10;
+}
+function getModalStyle() {
+  const top = 50 + rand();
+  const left = 50 + rand();
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`
+  };
+}
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </Typography>
+  );
+}
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`
+  };
+}
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -19,6 +74,11 @@ const useStyles = makeStyles(theme => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(2)
+  },
+  paper: {
+    // border: "2px solid #000",
+    // boxShadow: theme.shadows[5]
+    // padding: theme.spacing(2, 4, 3)
   }
 }));
 export const formatter = new Intl.NumberFormat("en-US", {
@@ -29,7 +89,23 @@ export const formatter = new Intl.NumberFormat("en-US", {
 export const circulatingFormat = num => {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 };
+
 export default function Content(props) {
+  const handleBuy = () => {
+    axios
+      .post(`http://localhost:4000/transactions`, {
+        name: symbol,
+        coin: coin,
+        price: pricetwo,
+        total: rate,
+        buy: true,
+        timestamp: Date.now()
+      })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(e => console.log(e));
+  };
   const [data, setData] = React.useState([]);
   const classes = useStyles();
   const [age, setAge] = React.useState(10);
@@ -39,6 +115,39 @@ export default function Content(props) {
   const [order, setOrder] = React.useState("market_cap_desc");
   const handleOrderChange = event => {
     setOrder(event.target.value);
+  };
+  const [values, setValues] = useState({
+    amount: "",
+    password: "",
+    weight: "",
+    weightRange: "",
+    showPassword: false
+  });
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
+  const [coin, setCoin] = useState([]);
+  const [pricetwo, setPricetwo] = useState([]);
+  const [rank, setRank] = useState([]);
+  const [image, setImage] = useState([]);
+  const [symbol, setSymbol] = useState([]);
+  const [circulatingSupply, setCirculatingSupply] = useState([]);
+  const [marketCap, setmarketCap] = useState([]);
+  const [ath, setAth] = useState([]);
+  const [atl, setAtl] = useState([]);
+  const [oneHourChange, setOneHourChange] = useState([]);
+  const [twoFourHourChange, setTwoFourHourChange] = useState([]);
+  const [sevenDaysChange, setSevenDaysChange] = useState([]);
+  const [fourteenDaysChange, setFourteenDaysChange] = useState([]);
+  const [thirtyDaysChange, setThirtyDaysChange] = useState([]);
+  const [oneYearChange, setOneYearChange] = useState([]);
+  const [totalVolume, setTotalVolume] = useState([]);
+  const [totalSupply, setTotalSupply] = useState([]);
+  const [coinGeckoRank, setCoinGeckoRank] = useState([]);
+  const [coinGeckoScore, setCoinGeckoScore] = useState([]);
+  const [description, setDescription] = useState([]);
+  const handleClicsk = e => {
+    e.preventDefault();
   };
   useEffect(() => {
     axios
@@ -58,9 +167,462 @@ export default function Content(props) {
     "course-id-6",
     "course-id-7"
   ];
+  const [modalStyle] = React.useState(getModalStyle);
+  const [open, setOpen] = React.useState(false);
+  const [rate, setRate] = useState(0);
+  const [amount, setAmount] = useState(0);
+
+  const handleOpen = data => {
+    setOpen(true);
+
+    axios
+      .get(`https://api.coingecko.com/api/v3/coins/${data.id}`)
+      .then(response => {
+        var coin = response.data;
+        setPricetwo(coin.market_data.current_price.usd);
+        setCoin(coin.name);
+        setRank(coin.market_cap_rank);
+        setSymbol(coin.symbol);
+        setImage(coin.image.large);
+        setDescription(coin.description.en);
+        setCirculatingSupply(coin.market_data.circulating_supply);
+        setAth(coin.market_data.ath.usd);
+        setAtl(coin.market_data.atl.usd);
+        setmarketCap(coin.market_data.market_cap.usd);
+        setOneHourChange(
+          coin.market_data.price_change_percentage_1h_in_currency.usd
+        );
+        setTwoFourHourChange(coin.market_data.price_change_percentage_24h);
+        setSevenDaysChange(coin.market_data.price_change_percentage_7d);
+        setFourteenDaysChange(coin.market_data.price_change_percentage_14d);
+        setThirtyDaysChange(coin.market_data.price_change_percentage_30d);
+        setOneYearChange(coin.market_data.price_change_percentage_1y);
+        setTotalVolume(coin.market_data.total_volume.usd);
+        setTotalSupply(coin.market_data.total_supply);
+        setCoinGeckoRank(coin.coingecko_rank);
+        setCoinGeckoScore(coin.coingecko_score);
+      });
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setRate(0);
+    setAmount(0);
+  };
+  const [value, setValue] = React.useState(0);
+
+  const handleChanges = (event, newValue) => {
+    setValue(newValue);
+  };
   return (
     <div className="container h-full md:pb-40 pt-24 px-4 flex items-center custom">
       <div className="flex flex-wrap md:h-full items-center w-full flex-custom">
+        <Modal
+          aria-labelledby="simple-modal-title"
+          aria-describedby="simple-modal-description"
+          open={open}
+          onClose={handleClose}
+        >
+          <div className="container h-full px-4 flex items-center custom">
+            <div className="flex flex-wrap items-center flex-custom">
+              <article
+                style={modalStyle}
+                className={classes.paper}
+                id="card_2"
+                className="card assignment-card course-id-4 card-invest"
+              >
+                <AppBar>
+                  <Tabs
+                    value={value}
+                    onChange={handleChanges}
+                    aria-label="simple tabs example"
+                    variant="fullWidth"
+                  >
+                    <Tab
+                      label="Buy"
+                      style={{ backgroundColor: "#48bb78" }}
+                      {...a11yProps(0)}
+                    />
+                    <Tab
+                      label="Sell"
+                      style={{ backgroundColor: "#ed7070" }}
+                      {...a11yProps(1)}
+                    />
+                  </Tabs>
+                </AppBar>
+                <TabPanel value={value} index={0}>
+                  <header></header>
+                  <section className="card-body card-inv">
+                    <div className="card-info ">
+                      <div className="card-info-element">
+                        <div className="buySellElement">
+                          <img src={image} alt="Image" className="buySellImg" />
+                          <div>
+                            <div>
+                              <div className="card-info-value">
+                                Coin Ticker:
+                              </div>
+                              <div className="card-info-description">
+                                &nbsp;&nbsp;{symbol}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="card-info-value">
+                                Current Price:
+                              </div>
+                              <div className="card-info-description">
+                                &nbsp;&nbsp;{pricetwo}
+                                <span>&nbsp;({twoFourHourChange}%)</span>
+                              </div>
+                            </div>
+                            {/* <div>
+                              <span className="price-span">
+                                <div className="card-info-value">Open:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                                <div className="card-info-value">High:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                                <br />
+                                <div className="card-info-value">Low:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                                <div className="card-info-value">Close:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                              </span>
+                            </div> */}
+                          </div>
+                        </div>
+
+                        <form
+                          className={classes.root}
+                          noValidate
+                          autoComplete="off"
+                        >
+                          <div className="flex">
+                            <div className="h-12 hit placehol">
+                              <label
+                                className="block buySellText text-gray-700 text-md font-bold md:text-right mb-1 md:mb-0 pr-4"
+                                htmlFor="inline-full-name"
+                              >
+                                RATE
+                              </label>
+                            </div>
+                            <div className="h-12 hit">
+                              <TextField
+                                id="outlined-number"
+                                type="number"
+                                InputLabelProps={{
+                                  shrink: true
+                                }}
+                                variant="outlined"
+                                InputProps={{
+                                  endAdornment: (
+                                    <InputAdornment
+                                      style={{ textTransform: "uppercase" }}
+                                      position="start"
+                                    >
+                                      {symbol}
+                                    </InputAdornment>
+                                  )
+                                }}
+                                type="number"
+                                value={amount}
+                                onChange={e => {
+                                  setRate(e.target.value * pricetwo);
+                                  setAmount(e.target.value);
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex">
+                            <div className="h-12 hit placehol">
+                              <label
+                                className="block buySellText text-gray-700 text-md font-bold md:text-right mb-1 md:mb-0 pr-4"
+                                htmlFor="inline-full-name"
+                              >
+                                AMOUNT
+                              </label>
+                            </div>
+                            <div className="h-12 hit">
+                              <TextField
+                                className="numberfield"
+                                id="outlined-start-adornment"
+                                type="number"
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      $
+                                    </InputAdornment>
+                                  )
+                                  // endAdornment: (
+                                  //   <div>
+                                  //     <InputAdornment
+                                  //       position="Start"
+                                  //       className="incretwo"
+                                  //     >
+                                  //       <IconButton
+                                  //         aria-label="toggle password visibility"
+                                  //         onClick={() => {
+                                  //           setRate(rate - 1);
+                                  //           handleClickAmount();
+                                  //         }}
+                                  //         edge="end"
+                                  //       >
+                                  //         <RemoveIcon />
+                                  //       </IconButton>
+                                  //     </InputAdornment>
+                                  //     <InputAdornment
+                                  //       position="end"
+                                  //       className="incre"
+                                  //     >
+                                  //       <IconButton
+                                  //         aria-label="toggle password visibility"
+                                  //         onClick={() => setRate(rate + 1)}
+                                  //         onMouseDown={handleMouseDownPassword}
+                                  //         edge="end"
+                                  //       >
+                                  //         <AddIcon />
+                                  //       </IconButton>
+                                  //     </InputAdornment>
+                                  //   </div>
+                                  // )
+                                }}
+                                value={rate}
+                                type="number"
+                                onChange={e => {
+                                  var rates =
+                                    +e.target.value -
+                                    +(
+                                      +e.target.value +
+                                      -e.target.value * 0.01
+                                    ) *
+                                      0.01;
+                                  console.log(rates);
+                                  setAmount(rates / pricetwo);
+                                  setRate(e.target.value);
+                                }}
+                                variant="outlined"
+                              />
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div className="card-info-element">
+                        <div className="flist">
+                          <p>
+                            Est. Net{" "}
+                            <span style={{ textTransform: "uppercase" }}>
+                              {symbol}
+                            </span>
+                            :
+                          </p>
+                          <span>
+                            {formatter.format(
+                              +rate - (+rate + -rate * 0.01) * 0.01
+                            )}
+                          </span>
+                        </div>
+                        <div className="flist">
+                          <p>Coin Base Fee: (1%)</p>
+                          <span>
+                            {formatter.format((+rate + -rate * 0.01) * 0.01)}
+                          </span>
+                        </div>
+                        <div className="flist">
+                          <p>Est. Total BTC:</p>
+                          <span>{formatter.format(rate)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <footer className="card-footer custom-foot foot-modal">
+                    <button
+                      onClick={handleClose}
+                      className="bg-gray-600 hover:bg-gray-600 text-white font-bold py-2 px-4 border-b-4 border-gray-700 hover:border-gray-500 rounded"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleBuy}
+                      className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded"
+                    >
+                      Buy
+                    </button>
+                  </footer>
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                  <header className="card-header"></header>
+                  <section className="card-body card-inv">
+                    <div className="card-info ">
+                      <div className="card-info-element">
+                        <div className="buySellElement">
+                          <img
+                            src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                            alt="Image"
+                            className="buySellImg"
+                          />
+                          <div>
+                            <div>
+                              <div className="card-info-value">
+                                Coin Ticker:
+                              </div>
+                              <div className="card-info-description">
+                                &nbsp;&nbsp;BTC
+                              </div>
+                            </div>
+                            <div>
+                              <div className="card-info-value">
+                                Current Price:
+                              </div>
+                              <div className="card-info-description">
+                                &nbsp;&nbsp;7,267.40
+                                <span>&nbsp;(-1.00%)</span>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="price-span">
+                                <div className="card-info-value">Open:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                                <div className="card-info-value">High:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                                <br />
+                                <div className="card-info-value">Low:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                                <div className="card-info-value">Close:</div>
+                                <div className="card-info-description">
+                                  &nbsp;7,267.40
+                                </div>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <form
+                          className={classes.root}
+                          noValidate
+                          autoComplete="off"
+                        >
+                          <div className="flex">
+                            <div className="h-12 hit placehol">
+                              <label
+                                className="block buySellText text-gray-700 text-md font-bold md:text-right mb-1 md:mb-0 pr-4"
+                                htmlFor="inline-full-name"
+                              >
+                                RATE
+                              </label>
+                            </div>
+                            <div className="h-12 hit">
+                              <TextField
+                                id="outlined-number"
+                                type="number"
+                                InputLabelProps={{
+                                  shrink: true
+                                }}
+                                variant="outlined"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex">
+                            <div className="h-12 hit placehol">
+                              <label
+                                className="block buySellText text-gray-700 text-md font-bold md:text-right mb-1 md:mb-0 pr-4"
+                                htmlFor="inline-full-name"
+                              >
+                                AMOUNT
+                              </label>
+                            </div>
+                            <div className="h-12 hit">
+                              <TextField
+                                className="numberfield"
+                                id="outlined-start-adornment"
+                                type="number"
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      $
+                                    </InputAdornment>
+                                  )
+                                  // endAdornment: (
+                                  //   <div>
+                                  //     <InputAdornment
+                                  //       position="Start"
+                                  //       className="incretwo"
+                                  //     >
+                                  //       <IconButton
+                                  //         aria-label="toggle password visibility"
+                                  //         onClick={() => setRate(rate - 1)}
+                                  //         onMouseDown={handleMouseDownPassword}
+                                  //         edge="end"
+                                  //       >
+                                  //         <RemoveIcon />
+                                  //       </IconButton>
+                                  //     </InputAdornment>
+                                  //     <InputAdornment
+                                  //       position="end"
+                                  //       className="incre"
+                                  //     >
+                                  //       <IconButton
+                                  //         aria-label="toggle password visibility"
+                                  //         onClick={() => setRate(rate + 1)}
+                                  //         onMouseDown={handleMouseDownPassword}
+                                  //         edge="end"
+                                  //       >
+                                  //         <AddIcon />
+                                  //       </IconButton>
+                                  //     </InputAdornment>
+                                  //   </div>
+                                  // )
+                                }}
+                                variant="outlined"
+                              />
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div className="card-info-element">
+                        <div className="flist">
+                          <p>Est. Net BTC:</p>
+                          <span>$0.00</span>
+                        </div>
+                        <div className="flist">
+                          <p>Coin Base Fee: (10%)</p>
+                          <span>$0.00</span>
+                        </div>
+                        <div className="flist">
+                          <p>Est. Total BTC:</p>
+                          <span>$0.00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <footer className="card-footer custom-foot foot-modal">
+                    <button
+                      onClick={handleClose}
+                      className="bg-gray-600 hover:bg-gray-600 text-white font-bold py-2 px-4 border-b-4 border-gray-700 hover:border-gray-500 rounded"
+                    >
+                      Cancel
+                    </button>
+                    <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
+                      Sell
+                    </button>
+                  </footer>
+                </TabPanel>
+              </article>
+            </div>
+          </div>
+        </Modal>
         <article className="card assignment-card top-card">
           <FormControl className={classes.formControls}>
             <InputLabel id="demo-simple-select-label">Order By</InputLabel>
@@ -118,7 +680,7 @@ export default function Content(props) {
                     <div>
                       <div className="card-info-value">Rank:</div>
                       <div className="card-info-description">
-                        &nbsp;&nbsp;{formatter.format(data.market_cap_rank)}
+                        &nbsp;&nbsp;{data.market_cap_rank}
                       </div>
                     </div>
                     <div>
@@ -138,7 +700,7 @@ export default function Content(props) {
                       <div className="card-info-value">Market Cap:</div>
                       <div className="card-info-description">
                         &nbsp;&nbsp;
-                        {formatter.format(data.market_cap)}
+                        {circulatingFormat(Math.round(data.market_cap))}
                       </div>
                     </div>
                     <div>
@@ -153,11 +715,14 @@ export default function Content(props) {
                 </div>
               </section>
               <footer className="card-footer custom-foot">
-                <NavLink to={`/coin-details/${data.id}`}>
-                  <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded">
-                    Buy/Sell
-                  </button>
-                </NavLink>
+                {/* <NavLink to={`/coin-details/${data.id}`}> */}
+                <button
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded"
+                  onClick={e => handleOpen(data)}
+                >
+                  Buy/Sell
+                </button>
+                {/* </NavLink> */}
                 <NavLink to={`/coin-details/${data.id}`}>
                   <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
                     View Details

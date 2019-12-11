@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ReactHtmlParser from "react-html-parser";
@@ -13,6 +13,8 @@ import Price from "./Price";
 import { formatter, circulatingFormat } from "./Content";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import CurrentPrice from "./CurrentPrice";
+
 function TabPanel({ children, value, index, ...other }) {
   return (
     <Typography
@@ -52,10 +54,10 @@ export default function Chart() {
   };
   let { id } = useParams();
   const [coin, setCoin] = useState([]);
+  const [pricetwo, setPricetwo] = useState([]);
   const [rank, setRank] = useState([]);
   const [image, setImage] = useState([]);
   const [symbol, setSymbol] = useState([]);
-  const [price, setPrice] = useState([]);
   const [circulatingSupply, setCirculatingSupply] = useState([]);
   const [marketCap, setmarketCap] = useState([]);
   const [ath, setAth] = useState([]);
@@ -72,17 +74,42 @@ export default function Chart() {
   const [coinGeckoScore, setCoinGeckoScore] = useState([]);
   const [description, setDescription] = useState([]);
   useEffect(() => {
-    setInterval(() => {
+    axios.get(`https://api.coingecko.com/api/v3/coins/${id}`).then(response => {
+      console.log(response.data);
+      setPricetwo(response.data.market_data.current_price.usd);
+      setCoin(response.data.name);
+      setRank(response.data.market_cap_rank);
+      setSymbol(response.data.symbol);
+      setImage(response.data.image.large);
+      setDescription(response.data.description.en);
+      setCirculatingSupply(response.data.market_data.circulating_supply);
+      setAth(response.data.market_data.ath.usd);
+      setAtl(response.data.market_data.atl.usd);
+      setmarketCap(response.data.market_data.market_cap.usd);
+      setOneHourChange(
+        response.data.market_data.price_change_percentage_1h_in_currency.usd
+      );
+      setTwoFourHourChange(
+        response.data.market_data.price_change_percentage_24h
+      );
+      setSevenDaysChange(response.data.market_data.price_change_percentage_7d);
+      setFourteenDaysChange(
+        response.data.market_data.price_change_percentage_14d
+      );
+      setThirtyDaysChange(
+        response.data.market_data.price_change_percentage_30d
+      );
+      setOneYearChange(response.data.market_data.price_change_percentage_1y);
+      setTotalVolume(response.data.market_data.total_volume.usd);
+      setTotalSupply(response.data.market_data.total_supply);
+      setCoinGeckoRank(response.data.coingecko_rank);
+      setCoinGeckoScore(response.data.coingecko_score);
+    });
+    const t = setInterval(() => {
       axios
         .get(`https://api.coingecko.com/api/v3/coins/${id}`)
         .then(response => {
-          console.log(response.data);
-          setCoin(response.data.name);
-          setRank(response.data.market_cap_rank);
-          setSymbol(response.data.symbol);
-          setImage(response.data.image.large);
-          setDescription(response.data.description.en);
-          setPrice(response.data.market_data.current_price.usd);
+          setPricetwo(response.data.market_data.current_price.usd);
           setCirculatingSupply(response.data.market_data.circulating_supply);
           setAth(response.data.market_data.ath.usd);
           setAtl(response.data.market_data.atl.usd);
@@ -107,16 +134,22 @@ export default function Chart() {
           );
           setTotalVolume(response.data.market_data.total_volume.usd);
           setTotalSupply(response.data.market_data.total_supply);
-          setCoinGeckoRank(response.data.coingecko_rank);
-          setCoinGeckoScore(response.data.coingecko_score);
         });
-    }, 1000);
+    }, 60000);
+    return () => clearInterval(t);
   }, [id]);
   function Change({ text, vari, space }) {
     return (
       <div>
-        <div className="card-info-value">{text} </div>
-        <div className={`card-info-description ${vari > 0 ? "green" : "red"}`}>
+        <div className="card-info-value culor">
+          {ReactHtmlParser("&nbsp;&nbsp;")}
+          {text}{" "}
+        </div>
+        <div
+          className={`card-info-description culor ${
+            vari > 0 ? "green" : "red"
+          }`}
+        >
           {space ? ReactHtmlParser("&nbsp;&nbsp;") : ""}
           {vari > 0 ? (
             <ExpandLessIcon className="bttom" />
@@ -124,6 +157,7 @@ export default function Chart() {
             <ExpandMoreIcon className="bttom" />
           )}
           {`${(Math.round(vari * 100) / 100).toFixed(2)}%`}
+          {ReactHtmlParser("&nbsp;&nbsp;")}
         </div>
       </div>
     );
@@ -144,6 +178,9 @@ export default function Chart() {
             <div className="card-info infot card-info-details ">
               <div className="card-info-element picto">
                 <img src={image} alt="Image" />
+                <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded">
+                  Buy/Sell
+                </button>
               </div>
               <div className="card-info-element elemente">
                 <div className="card-info-part">
@@ -161,12 +198,7 @@ export default function Chart() {
                       &nbsp;&nbsp;{rank}
                     </div>
                   </div>
-                  <div>
-                    <div className="card-info-value">Current Price:</div>
-                    <div className={`card-info-description ${0 ? "" : ""}`}>
-                      &nbsp;&nbsp; {formatter.format(price)}
-                    </div>
-                  </div>
+                  <CurrentPrice pricetwo={pricetwo} />
                   <div>
                     <div className="card-info-value">Circulating Supply:</div>
                     <div className="card-info-description">

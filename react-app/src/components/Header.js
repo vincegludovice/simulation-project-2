@@ -18,7 +18,7 @@ export default function Waves() {
               <Link to="/">Coin Lists</Link>
             </li>
             <li>
-              <Link to="/investment">Buy/Sell</Link>
+              <Link to="/investment">Investment Tracking</Link>
             </li>
             <li>
               <Link to="/faq">FAQ</Link>

@@ -1,3 +1,33 @@
 {
-  "transactions": []
+  "transactions": [
+    {
+      "coin": "Bitcoin",
+      "price": 7234.93,
+      "total": "25000",
+      "id": 1
+    },
+    {
+      "coin": "Bitcoin",
+      "price": 7242.8,
+      "total": "25000",
+      "id": 2
+    },
+    {
+      "coin": "Bitcoin",
+      "price": 7243.34,
+      "total": "25000",
+      "buy": true,
+      "date": "2019-12-11T09:28:57.558Z",
+      "id": 3
+    },
+    {
+      "name": "btc",
+      "coin": "Bitcoin",
+      "price": 7236.12,
+      "total": "25000",
+      "buy": true,
+      "timestamo": 1576056899807,
+      "id": 4
+    }
+  ]
 }

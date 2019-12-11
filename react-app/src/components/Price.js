@@ -73,7 +73,7 @@ export default function Chart({ length, formatter, circulatingFormat }) {
           })
         );
       });
-  }, [id]);
+  }, [id, length]);
   return (
     <ComposedChart
       width={1235}
