@@ -259,6 +259,11 @@ svg {
   height: auto !important;
   cursor: default;
 }
+.custom .car.heigt {
+  min-height: 25px !important;
+  height: auto !important;
+  cursor: default;
+}
 @media (max-width: 340px) {
   .custom .card {
     margin: 20px calc(50% - 150px);
@@ -315,6 +320,10 @@ svg {
   height: 50px;
   border-radius: 0 0 5px 5px;
   background-color: #f4f6f8;
+}
+
+.card-footer-color {
+  background-color: white;
 }
 .card-header {
   top: 0;
@@ -784,4 +793,7 @@ svg {
 }
 .foot-modal > button:first-of-type {
   margin-right: 10px;
+}
+.card-body.price-chart-desc.card-section-table {
+  padding: 50px 0 0;
 }

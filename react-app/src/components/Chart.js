@@ -341,7 +341,7 @@ export default function Chart() {
               </div>
             </div>
           </section>
-          <footer className="card-footer price-chart-foot"></footer>
+          <footer className="card-footer price-chart-foot card-footer-color"></footer>
         </article>
         {description ? (
           <article
@@ -356,7 +356,7 @@ export default function Chart() {
                 {ReactHtmlParser(description)}
               </p>
             </section>
-            <footer className="card-footer price-chart-foot"></footer>
+            <footer className="card-footer price-chart-foot card-footer-color"></footer>
           </article>
         ) : (
           <article></article>

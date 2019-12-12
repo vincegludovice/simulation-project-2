@@ -95,16 +95,18 @@ export default function Content(props) {
     axios
       .post(`http://localhost:4000/transactions`, {
         name: symbol,
+        coinId: coinId,
         coin: coin,
+        coinQuantity: amount,
         price: pricetwo,
-        total: rate,
+        totalAmount: rate,
         buy: true,
         timestamp: Date.now()
       })
       .then(response => {
-        console.log(response);
+        console.log(response.data);
       })
-      .catch(e => console.log(e));
+      .catch(e => console.log(e.response.data));
   };
   const [data, setData] = React.useState([]);
   const classes = useStyles();
@@ -127,6 +129,7 @@ export default function Content(props) {
     event.preventDefault();
   };
   const [coin, setCoin] = useState([]);
+  const [coinId, setCoinId] = useState([]);
   const [pricetwo, setPricetwo] = useState([]);
   const [rank, setRank] = useState([]);
   const [image, setImage] = useState([]);
@@ -181,6 +184,7 @@ export default function Content(props) {
         var coin = response.data;
         setPricetwo(coin.market_data.current_price.usd);
         setCoin(coin.name);
+        setCoinId(coin.id);
         setRank(coin.market_cap_rank);
         setSymbol(coin.symbol);
         setImage(coin.image.large);
@@ -429,7 +433,7 @@ export default function Content(props) {
                           </span>
                         </div>
                         <div className="flist">
-                          <p>Coin Base Fee: (1%)</p>
+                          <p>Transaction Fee: (1%)</p>
                           <span>
                             {formatter.format((+rate + -rate * 0.01) * 0.01)}
                           </span>
@@ -597,7 +601,7 @@ export default function Content(props) {
                           <span>$0.00</span>
                         </div>
                         <div className="flist">
-                          <p>Coin Base Fee: (10%)</p>
+                          <p>Transaction Fee: (1%)</p>
                           <span>$0.00</span>
                         </div>
                         <div className="flist">
