@@ -2,9 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Route, BrowserRouter, Switch } from "react-router-dom";
 import Chart from "./Chart";
-import Investment from "./Investment";
-import Content from "./Content";
-import Faq from "./Faq";
+import Investment from "./Investment_Tracking/InvestmentIndex";
+import ContentIndex from "./Content/ContentIndex";
 
 export default function Waves() {
   const [page, setPage] = React.useState(1);
@@ -20,9 +19,9 @@ export default function Waves() {
             <li>
               <Link to="/investment">Investment Tracking</Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="/faq">FAQ</Link>
-            </li>
+            </li> */}
           </ol>
         </div>
       </header>
@@ -30,11 +29,11 @@ export default function Waves() {
         <Route
           exact
           path="/"
-          render={() => <Content setPage={setPage} page={page} />}
+          render={() => <ContentIndex setPage={setPage} page={page} />}
         />
         <Route exact path="/coin-details/:id" component={Chart} />
         <Route exact path="/investment" component={Investment} />
-        <Route exact path="/faq" component={Faq} />
+        {/* <Route exact path="/faq" component={Faq} /> */}
       </Switch>
     </BrowserRouter>
   );

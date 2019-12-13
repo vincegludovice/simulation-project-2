@@ -10,7 +10,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Price from "./Price";
-import { formatter, circulatingFormat } from "./Content";
+import { formatter, circulatingFormat } from "./Content/ContentIndex";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CurrentPrice from "./CurrentPrice";
@@ -75,7 +75,6 @@ export default function Chart() {
   const [description, setDescription] = useState([]);
   useEffect(() => {
     axios.get(`https://api.coingecko.com/api/v3/coins/${id}`).then(response => {
-      console.log(response.data);
       setPricetwo(response.data.market_data.current_price.usd);
       setCoin(response.data.name);
       setRank(response.data.market_cap_rank);
@@ -178,9 +177,9 @@ export default function Chart() {
             <div className="card-info infot card-info-details ">
               <div className="card-info-element picto">
                 <img src={image} alt="Image" />
-                <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded">
+                {/* <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded">
                   Buy/Sell
-                </button>
+                </button> */}
               </div>
               <div className="card-info-element elemente">
                 <div className="card-info-part">
