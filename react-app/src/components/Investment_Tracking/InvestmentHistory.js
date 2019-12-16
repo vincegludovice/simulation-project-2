@@ -107,11 +107,47 @@ export default function InvestmentHistory({ selected, state, setState }) {
           render: rowData => {
             return <p>{(+rowData.totalAmount).toFixed(2)}</p>;
           }
+        },
+        {
+          title: "Profit/Loss",
+          headerStyle: {
+            height: 10,
+            fontWeight: "bold"
+          },
+          type: "numeric",
+          render: rowData =>
+            !rowData.buy ? (
+              <p className={rowData.profitOrLoss <= 0 ? "red" : "green"}>
+                {Math.round(rowData.profitOrLoss * 10000) / 10000} %
+              </p>
+            ) : (
+              <p>------</p>
+            )
+        },
+        {
+          title: "Profit/Loss (USD)",
+          headerStyle: {
+            height: 10,
+            fontWeight: "bold"
+          },
+          type: "numeric",
+          render: rowData =>
+            !rowData.buy ? (
+              <p className={rowData.profitOrLoss <= 0 ? "red" : "green"}>
+                {Math.round(
+                  (rowData.profitOrLoss / 100) *
+                    rowData.buyPrice *
+                    rowData.coinQuantity *
+                    10000
+                ) / 10000}
+              </p>
+            ) : (
+              <p>------</p>
+            )
         }
       ]}
       data={state.data}
       options={{
-        paging: false,
         search: false
       }}
     />

@@ -61,7 +61,7 @@ export default function InvestmentPortfolio() {
       var output = reducer(buyData, false);
       var outputAfterSell = reducer(sellData, false);
       var all = [...output, ...outputAfterSell];
-      var overall = reducer(all, true);
+      var overall = reducer(all, true).filter(data => data.coinQuantity > 0);
       let coins = [...output.map(el => el.coinId)].toString();
       const pricesWs = new WebSocket(
         `wss://ws.coincap.io/prices?assets=${coins}`

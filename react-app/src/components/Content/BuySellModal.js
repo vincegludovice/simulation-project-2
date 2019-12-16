@@ -5,9 +5,67 @@ import Modal from "@material-ui/core/Modal";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+import PropTypes from "prop-types";
 import axios from "axios";
 
-export default function BuySellModal({ ...props }) {
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`
+  };
+}
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </Typography>
+  );
+}
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired
+};
+
+export default function BuySellModal({
+  open,
+  handleClose,
+  modalStyle,
+  value,
+  handleChanges,
+  image,
+  symbol,
+  pricetwo,
+  twoFourHourChange,
+  balance,
+  amount,
+  setAmount,
+  rate,
+  formatter,
+  handleBuy,
+  sellCoin,
+  setError,
+  setSellAmount,
+  props,
+  setRate,
+  error,
+  setNewBalance,
+  setSellCoin,
+  handleSell
+}) {
+  console.log(open);
   return (
     <Modal
       aria-labelledby="simple-modal-title"
@@ -19,7 +77,6 @@ export default function BuySellModal({ ...props }) {
         <div className="flex flex-wrap items-center flex-custom">
           <article
             style={modalStyle}
-            className={classes.paper}
             id="card_2"
             className="card assignment-card course-id-4 card-invest"
           >
@@ -74,11 +131,7 @@ export default function BuySellModal({ ...props }) {
                       </div>
                     </div>
 
-                    <form
-                      className={classes.root}
-                      noValidate
-                      autoComplete="off"
-                    >
+                    <form noValidate autoComplete="off">
                       <div className="flex">
                         <div className="h-12 hit placehol">
                           <label
@@ -231,11 +284,7 @@ export default function BuySellModal({ ...props }) {
                       </div>
                     </div>
 
-                    <form
-                      className={classes.root}
-                      noValidate
-                      autoComplete="off"
-                    >
+                    <form noValidate autoComplete="off">
                       <div className="flex">
                         <div className="h-12 hit placehol">
                           <label

@@ -71,11 +71,6 @@ const useStyles = makeStyles(theme => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(2)
-  },
-  paper: {
-    // border: "2px solid #000",
-    // boxShadow: theme.shadows[5]
-    // padding: theme.spacing(2, 4, 3)
   }
 }));
 export const formatter = new Intl.NumberFormat("en-US", {
@@ -86,7 +81,6 @@ export const formatter = new Intl.NumberFormat("en-US", {
 export const circulatingFormat = num => {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 };
-
 export default function ContentIndex(props) {
   const handleBuy = () => {
     if (amount) {
@@ -101,7 +95,6 @@ export default function ContentIndex(props) {
           totalAmount: rate,
           buy: true,
           timestamp: new Date().getTime()
-          //   profitOrLoss:
         })
         .then(() => {
           Swal.fire({
@@ -125,7 +118,13 @@ export default function ContentIndex(props) {
       });
     }
   };
-  const handleSell = val => {
+  const gainLoss = (priceSold, current) => {
+    return (Number(priceSold) - Number(current)) / Number(current);
+  };
+  const percentage = num => {
+    return (Number(num) - Number(0.01)) * 100;
+  };
+  const handleSell = () => {
     if (sellCoin) {
       axios
         .post("http://localhost:4000/transactions", {
@@ -137,14 +136,24 @@ export default function ContentIndex(props) {
           price: pricetwo,
           totalAmount: totalfee,
           buy: false,
-          timestamp: new Date().getTime()
+          timestamp: new Date().getTime(),
+          profitOrLoss: profitOrLoss,
+          buyPrice: buyPrice
         })
         .then(() => {
           setSellAmount(0);
           setSellCoin(0);
+          var gainLosss = gainLoss(pricetwo, coinList[coinId]);
+          var percentageProfit =
+            Number(gainLosss) + Number(percentage(gainLosss));
+          var profit =
+            Number(totalfee) * (Number(percentageProfit) / Number(100));
           Swal.fire({
             icon: "success",
-            title: `Succesfully sold ${coin}`
+            title: `You have succesfully sold ${sellCoin} coins of ${coin} at ${pricetwo}.`,
+            footer: `<p>Gain/Loss: <span class=${
+              profitOrLoss > 0 ? "green" : "red"
+            }>${profitOrLoss.toFixed(5)}%</span></p>`
           });
           setOpen(false);
         })
@@ -163,6 +172,7 @@ export default function ContentIndex(props) {
       });
     }
   };
+  const [buyPrice, setBuyPrice] = useState(0);
   const [data, setData] = React.useState([]);
   const classes = useStyles();
   const [age, setAge] = React.useState(10);
@@ -199,6 +209,7 @@ export default function ContentIndex(props) {
   const [newBalance, setNewBalance] = useState(false);
   const [sellCoin, setSellCoin] = useState(0);
   const [sellAmount, setSellAmount] = useState(0);
+  const [currentId, setCurrentId] = useState("");
   let totalfee = +sellCoin * +pricetwo;
   useEffect(() => {
     axios
@@ -207,6 +218,11 @@ export default function ContentIndex(props) {
       )
       .then(response => {
         setData(response.data);
+        setListOfCoin(
+          response.data.map(data => {
+            return data.id;
+          })
+        );
       });
   }, [props.page, age, order]);
   const header = [
@@ -222,24 +238,26 @@ export default function ContentIndex(props) {
   const [open, setOpen] = React.useState(false);
   const [rate, setRate] = useState(0);
   const [amount, setAmount] = useState(0);
-
-  const handleOpen = data => {
-    setOpen(true);
-    axios.get(`http://localhost:4000/transactions`).then(response => {
-      let initBalance = 0;
-      let fArray = response.data.filter(val => {
-        return val.coinId === data.id;
-      });
-      fArray.forEach(newVal => {
-        if (newVal.buy) initBalance += newVal.coinQuantity;
-        else {
-          initBalance -= newVal.coinQuantity;
+  const [listOfCoin, setListOfCoin] = useState([]);
+  const [profitOrLoss, setProfitOrLoss] = useState([]);
+  let coinList = {};
+  if (listOfCoin) {
+    const pricesWs = new WebSocket(
+      `wss://ws.coincap.io/prices?assets=${listOfCoin.join(",")}`
+    );
+    pricesWs.onmessage = function(msg) {
+      Object.keys(JSON.parse(msg.data)).forEach(e => {
+        if (JSON.parse(msg.data)[`${e}`] !== "") {
+          coinList[e] = JSON.parse(msg.data)[`${e}`];
         }
       });
-      setBalance(Number(initBalance).toFixed(5));
-    });
+    };
+  }
+  const handleOpen = datas => {
+    setCurrentId(datas.id);
+    setOpen(true);
     axios
-      .get(`https://api.coingecko.com/api/v3/coins/${data.id}`)
+      .get(`https://api.coingecko.com/api/v3/coins/${datas.id}`)
       .then(response => {
         var coin = response.data;
         setPricetwo(coin.market_data.current_price.usd);
@@ -268,6 +286,45 @@ export default function ContentIndex(props) {
       });
   };
 
+  axios
+    .get(`http://localhost:4000/transactions`)
+    .then(response => {
+      let initBalance = 0;
+      let fArray = response.data.filter(val => {
+        return val.coinId === currentId;
+      });
+      fArray.forEach(newVal => {
+        if (newVal.buy) initBalance += newVal.coinQuantity;
+        else initBalance -= newVal.coinQuantity;
+      });
+      setBalance(initBalance < 0 ? 0 : Number(initBalance).toFixed(5));
+      return axios.get(
+        `http://localhost:4000/transactions?coinId=${currentId}`
+      );
+    })
+    .then(response => {
+      let aCurrentCointPrice = 0;
+      let count = 0;
+      var stat = true;
+      var statChecker = true;
+      let array = response.data.reverse();
+      array.map((x, i) => {
+        if (x.buy && stat) {
+          statChecker = false;
+          aCurrentCointPrice += x.price;
+          count++;
+        } else if (!x.buy) {
+          if (!statChecker) stat = false;
+        }
+        return x;
+      });
+      setProfitOrLoss(
+        ((pricetwo - aCurrentCointPrice / count) /
+          (aCurrentCointPrice / count)) *
+          100
+      );
+      setBuyPrice(aCurrentCointPrice / count);
+    });
   const handleClose = () => {
     setOpen(false);
     setRate(0);
@@ -292,7 +349,6 @@ export default function ContentIndex(props) {
             <div className="flex flex-wrap items-center flex-custom">
               <article
                 style={modalStyle}
-                className={classes.paper}
                 id="card_2"
                 className="card assignment-card course-id-4 card-invest"
               >
@@ -481,11 +537,7 @@ export default function ContentIndex(props) {
                     <div className="card-info ">
                       <div className="card-info-element">
                         <div className="buySellElement">
-                          <img
-                            src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
-                            alt="Image"
-                            className="buySellImg"
-                          />
+                          <img src={image} alt="Image" className="buySellImg" />
                           <div>
                             <div>
                               <div className="card-info-value">
@@ -592,6 +644,7 @@ export default function ContentIndex(props) {
             </div>
           </div>
         </Modal>
+
         <article className="card assignment-card top-card">
           <FormControl className={classes.formControls}>
             <InputLabel id="demo-simple-select-label">Order By</InputLabel>
@@ -655,7 +708,10 @@ export default function ContentIndex(props) {
                     <div>
                       <div className="card-info-value">Current Price:</div>
                       <div className="card-info-description">
-                        &nbsp;&nbsp;{formatter.format(data.current_price)}
+                        &nbsp;&nbsp;
+                        {coinList[data.id]
+                          ? coinList[data.id]
+                          : formatter.format(data.current_price)}
                       </div>
                     </div>
                     <div>
