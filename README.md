@@ -26,12 +26,12 @@ Simulation Project 2 : Cryptocurrency is an app that displays the list of all th
 
 - [React JS](https://reactjs.org/)
 - [CoinGecko API V3](https://www.coingecko.com/api/documentations/v3)
-- [Visual Studio Code](<([https://code.visualstudio.com/](https://code.visualstudio.com/))>)
-- [Sweet Alert](<([[https://sweetalert2.github.io/](https://sweetalert2.github.io/)])>)
-- [Coincap](<([[https://coincap.io/](https://coincap.io/)])>)
-- [Material-UI](<([[https://material-ui.com/](https://material-ui.com/)])>)
-- [Tailwind CSS](<([[https://tailwindcss.com/](https://tailwindcss.com/)])>)
-- [Recharts](<([[http://recharts.org/](http://recharts.org/)])>)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Sweet Alert](https://sweetalert2.github.io/)
+- [Coincap](https://coincap.io/)
+- [Material-UI](https://material-ui.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React JS](http://recharts.org/)
 
 ## Author/s
 
