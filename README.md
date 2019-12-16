@@ -41,4 +41,4 @@ Vince Gerard F. Ludovice
 
 - [StackOverflow](https://stackoverflow.com/)
 - [CoinGecko API V3](https://www.coingecko.com/api/documentations/v3)
-- [Visual Studio Code](<([https://code.visualstudio.com/](https://code.visualstudio.com/))>)
+- [Visual Studio Code](https://code.visualstudio.com/)
