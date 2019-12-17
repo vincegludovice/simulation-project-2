@@ -1,44 +1,4 @@
 {
   "transactions": [
-    {
-      "name": "btc",
-      "coinId": "bitcoin",
-      "coin": "Bitcoin",
-      "img": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-      "coinQuantity": "10",
-      "price": 7062.82,
-      "totalAmount": 70628.2,
-      "buy": true,
-      "timestamp": 1576487353908,
-      "id": 1
-    },
-    {
-      "name": "btc",
-      "coinId": "bitcoin",
-      "coin": "Bitcoin",
-      "img": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-      "coinQuantity": 5,
-      "price": 7062.82,
-      "totalAmount": 35314.1,
-      "buy": false,
-      "timestamp": 1576487379221,
-      "profitOrLoss": 0,
-      "buyPrice": 7062.82,
-      "id": 2
-    },
-    {
-      "name": "btc",
-      "coinId": "bitcoin",
-      "coin": "Bitcoin",
-      "img": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-      "coinQuantity": 1,
-      "price": 7061.1,
-      "totalAmount": 7061.1,
-      "buy": false,
-      "timestamp": 1576487561977,
-      "profitOrLoss": -0.02435287887839907,
-      "buyPrice": 7062.82,
-      "id": 3
-    }
   ]
 }
