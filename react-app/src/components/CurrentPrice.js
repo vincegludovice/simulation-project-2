@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { formatter } from "./Content/ContentIndex";
+import { formatter } from "./Function";
 
 export default function CurrentPrice({ pricetwo }) {
   const [price, setPrice] = useState(0);

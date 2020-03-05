@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Transactions } from "../API/API";
 import MaterialTable from "material-table";
 
@@ -15,14 +15,7 @@ export default function InvestmentHistory({ selected, state, setState }) {
         }).format(val.timestamp);
         return val;
       });
-      // console.log(val.coin);
-      // console.log(buyData);
-      // return val.coin.toString() === selected.toString();
-      // console.log(output);
       setState({ data: output });
-      // return () => {
-      //   setState({ ...state, data: output });
-      // };
     });
   }, [selected]);
   return (

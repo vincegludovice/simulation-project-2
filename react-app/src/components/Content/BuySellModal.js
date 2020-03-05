@@ -1,77 +1,248 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Modal from "@material-ui/core/Modal";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import PropTypes from "prop-types";
-import axios from "axios";
+import React, { useReducer, useState, useEffect } from "react";
+import {
+  TextField,
+  InputAdornment,
+  Modal,
+  AppBar,
+  Tabs,
+  Tab
+} from "@material-ui/core";
+import { formatter, TabPanel, a11yProps } from "../Function";
+import Swal from "sweetalert2";
+import { coinDataRequest, coinTransactionRequest, buy, sell } from "../API/API";
 
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`
-  };
-}
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </Typography>
-  );
-}
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+const initialState = {
+  buyPrice: 0,
+  data: [],
+  age: 10,
+  order: "market_cap_desc",
+  coin: [],
+  coinId: [],
+  pricetwo: 0,
+  twoFourHourChange: [],
+  image: [],
+  symbol: [],
+  balance: 0,
+  error: false,
+  sellCoin: 0,
+  currentId: "",
+  rate: 0,
+  amount: 0,
+  listOfCoin: [],
+  profitOrLoss: 0,
+  value: 0,
+  sellAmount: 0,
+  newBalance: 0
 };
 
-export default function BuySellModal({
-  open,
-  handleClose,
-  modalStyle,
-  value,
-  handleChanges,
-  image,
-  symbol,
-  pricetwo,
-  twoFourHourChange,
-  balance,
-  amount,
-  setAmount,
-  rate,
-  formatter,
-  handleBuy,
-  sellCoin,
-  setError,
-  setSellAmount,
-  props,
-  setRate,
-  error,
-  setNewBalance,
-  setSellCoin,
-  handleSell
-}) {
-  console.log(open);
+const seducer = (
+  state,
+  { type, data, value, newValue, balance, profitOrLoss, buyPrice }
+) => {
+  switch (type) {
+    case "handleClose":
+      return { ...state, rate: 0, amount: 0 };
+    case "handleOpen":
+      return {
+        ...state,
+        currentId: data.id,
+        pricetwo: data.market_data.current_price.usd,
+        coin: data.name,
+        coinId: data.id,
+        symbol: data.symbol,
+        image: data.image.large,
+        twoFourHourChange: data.market_data.price_change_percentage_24h,
+        balance: balance < 0 ? 0 : Number(balance).toFixed(5),
+        profitOrLoss: profitOrLoss,
+        buyPrice: buyPrice
+      };
+    case "handleRateChange":
+      return {
+        ...state,
+        rate: value * state.pricetwo,
+        amount: value
+      };
+    case "handleAmountChange":
+      var rates = value - +(+value + -value * 0.01) * 0.01;
+      return {
+        ...state,
+        amount: rates / state.pricetwo,
+        rate: value
+      };
+    case "handleChanges":
+      return {
+        ...state,
+        value: newValue
+      };
+    case "handleSell":
+      return {
+        ...state,
+        sellCoin: 0
+      };
+    case "handleChangeQuantity":
+      return {
+        ...state,
+        error: Number(value) > Number(state.balance),
+        sellCoin: Number(value) > -1 ? Number(value) : 0,
+        newBalance:
+          Number(value) < Number(state.balance)
+            ? Number(state.balance) - Number(value)
+            : 0
+      };
+    default:
+      return initialState;
+  }
+};
+
+export default function BuySellModal({ open, id, handleClose }) {
+  const [state, dispatch] = useReducer(seducer, initialState);
+  const [modalStyle] = useState(getModalStyle);
+  useEffect(() => {
+    (async function anyNameFunction() {
+      try {
+        let coinData = await coinDataRequest(id);
+        let coinBalance = await coinTransactionRequest(id).then(response => {
+          let initBalance = 0;
+          response.data.forEach(
+            newVal =>
+              (initBalance += Number(
+                newVal.buy ? +newVal.coinQuantity : -newVal.coinQuantity
+              ))
+          );
+          return initBalance;
+        });
+        let coinGains = coinTransactionRequest(id).then(response => {
+          let aCurrentCointPrice = 0;
+          let count = 0;
+          var stat = true;
+          var statChecker = true;
+          let array = response.data.reverse();
+          array.map(x => {
+            if (x.buy && stat) {
+              statChecker = false;
+              aCurrentCointPrice += Number(x.price);
+              count++;
+            } else if (!x.buy) {
+              if (!statChecker) stat = false;
+            }
+            return x;
+          });
+          return [aCurrentCointPrice, count];
+        });
+        let profitOrLoss = await coinGains.then(res => {
+          return (
+            ((Number(coinData.data.market_data.current_price.usd) -
+              Number(res[0]) / Number(res[1])) /
+              (Number(res[0]) / Number(res[1]))) *
+            100
+          );
+        });
+        let buyPrice = await coinGains.then(
+          res => Number(res[0]) / Number(res[1])
+        );
+        dispatch({
+          type: "handleOpen",
+          data: coinData.data,
+          balance: coinBalance,
+          profitOrLoss: profitOrLoss,
+          buyPrice: buyPrice
+        });
+      } catch (e) {
+        Swal.fire({
+          icon: "error",
+          title: `Failed to retrieve data of ${id}`
+          // text: e.response.data
+        });
+      }
+    })();
+  }, []);
+
+  const onBuy = async () => {
+    try {
+      if (state.amount) {
+        await buy(state)
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: `Succesfully purchased ${state.coin}`
+            });
+            handleClose();
+            dispatch({ type: "handleClose" });
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: "error",
+              title: `Unable to Buy ${state.coin}`,
+              text: e.response.data
+            });
+          });
+      } else {
+        handleClose();
+        dispatch({ type: "handleClose" });
+        Swal.fire({
+          icon: "error",
+          title: `Unable to Buy ${state.coin} - Empty Transaction`
+        });
+      }
+    } catch (e) {
+      Swal.fire({
+        icon: "error",
+        title: `Unable to Buy ${state.coin}`,
+        text: e.response.data
+      });
+    }
+  };
+
+  const onSell = async () => {
+    try {
+      if (state.sellCoin) {
+        await sell(state)
+          .then(() => {
+            dispatch({ type: "handleSell" });
+            Swal.fire({
+              icon: "success",
+              title: `You have succesfully sold ${state.sellCoin} coin(s) of ${state.coin} at ${state.pricetwo}.`,
+              footer: `<p>Gain/Loss: <span class=${
+                state.profitOrLoss > 0 ? "green" : "red"
+              }>${state.profitOrLoss.toFixed(5)}%</span></p>`
+            });
+            handleClose();
+            dispatch({ type: "handleClose" });
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: "error",
+              title: `Unable to Sell ${state.coin}`
+              //   text: e.response.data
+            });
+          });
+      } else {
+        handleClose();
+        dispatch({ type: "handleClose" });
+        Swal.fire({
+          icon: "error",
+          title: `Unable to Sell ${state.coin} - Empty Transaction`
+        });
+      }
+    } catch (e) {
+      handleClose();
+      dispatch({ type: "handleClose" });
+      Swal.fire({
+        icon: "error",
+        title: `Unable to Sell ${state.coin}`,
+        text: e.response.data
+      });
+    }
+  };
   return (
     <Modal
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description"
       open={open}
-      onClose={handleClose}
+      onClose={() => {
+        handleClose();
+        dispatch({ type: "handleClose" });
+      }}
     >
       <div className="container h-full px-4 flex items-center custom">
         <div className="flex flex-wrap items-center flex-custom">
@@ -82,8 +253,11 @@ export default function BuySellModal({
           >
             <AppBar>
               <Tabs
-                value={value}
-                onChange={handleChanges}
+                value={state.value}
+                // onChange={handleChanges}
+                onChange={(e, newValue) =>
+                  dispatch({ type: "handleChanges", newValue: newValue })
+                }
                 aria-label="simple tabs example"
                 variant="fullWidth"
               >
@@ -99,25 +273,29 @@ export default function BuySellModal({
                 />
               </Tabs>
             </AppBar>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={state.value} index={0}>
               <header></header>
               <section className="card-body card-inv">
                 <div className="card-info ">
                   <div className="card-info-element">
                     <div className="buySellElement">
-                      <img src={image} alt="Image" className="buySellImg" />
+                      <img
+                        src={state.image}
+                        alt="Image"
+                        className="buySellImg"
+                      />
                       <div>
                         <div>
                           <div className="card-info-value">Coin Ticker:</div>
                           <div className="card-info-description">
-                            &nbsp;&nbsp;{symbol}
+                            &nbsp;&nbsp;{state.symbol}
                           </div>
                         </div>
                         <div>
                           <div className="card-info-value">Current Price:</div>
                           <div className="card-info-description">
-                            &nbsp;&nbsp;{pricetwo}
-                            <span>&nbsp;({twoFourHourChange}%)</span>
+                            &nbsp;&nbsp;{state.pricetwo}
+                            <span>&nbsp;({state.twoFourHourChange}%)</span>
                           </div>
                         </div>
                         <div>
@@ -125,7 +303,7 @@ export default function BuySellModal({
                             Coin Quantity On Hand:
                           </div>
                           <div className="card-info-description">
-                            &nbsp;&nbsp;{balance}
+                            &nbsp;&nbsp;{state.balance}
                           </div>
                         </div>
                       </div>
@@ -155,16 +333,18 @@ export default function BuySellModal({
                                   style={{ textTransform: "uppercase" }}
                                   position="start"
                                 >
-                                  {symbol}
+                                  {state.symbol}
                                 </InputAdornment>
                               )
                             }}
                             type="number"
-                            value={amount}
-                            onChange={e => {
-                              setRate(e.target.value * pricetwo);
-                              setAmount(e.target.value);
-                            }}
+                            value={state.amount}
+                            onChange={e =>
+                              dispatch({
+                                type: "handleRateChange",
+                                value: e.target.value
+                              })
+                            }
                           />
                         </div>
                       </div>
@@ -189,16 +369,14 @@ export default function BuySellModal({
                                 </InputAdornment>
                               )
                             }}
-                            value={rate}
+                            value={state.rate}
                             type="number"
-                            onChange={e => {
-                              var rates =
-                                e.target.value -
-                                +(+e.target.value + -e.target.value * 0.01) *
-                                  0.01;
-                              setAmount(rates / pricetwo);
-                              setRate(e.target.value);
-                            }}
+                            onChange={e =>
+                              dispatch({
+                                type: "handleAmountChange",
+                                value: e.target.value
+                              })
+                            }
                             variant="outlined"
                           />
                         </div>
@@ -210,52 +388,58 @@ export default function BuySellModal({
                       <p>
                         Est. Net{" "}
                         <span style={{ textTransform: "uppercase" }}>
-                          {symbol}
+                          {state.symbol}
                         </span>
                         :
                       </p>
                       <span>
                         {formatter.format(
-                          +rate - (+rate + -rate * 0.01) * 0.01
+                          +state.rate -
+                            (+state.rate + -state.rate * 0.01) * 0.01
                         )}
                       </span>
                     </div>
                     <div className="flist">
                       <p>Transaction Fee: (1%)</p>
                       <span>
-                        {formatter.format((+rate + -rate * 0.01) * 0.01)}
+                        {formatter.format(
+                          (+state.rate + -state.rate * 0.01) * 0.01
+                        )}
                       </span>
                     </div>
                     <div className="flist">
                       <p>Est. Total BTC:</p>
-                      <span>{formatter.format(rate)}</span>
+                      <span>{formatter.format(state.rate)}</span>
                     </div>
                   </div>
                 </div>
               </section>
               <footer className="card-footer custom-foot foot-modal">
                 <button
-                  onClick={handleClose}
+                  onClick={() => {
+                    handleClose();
+                    dispatch({ type: "handleClose" });
+                  }}
                   className="bg-gray-600 hover:bg-gray-600 text-white font-bold py-2 px-4 border-b-4 border-gray-700 hover:border-gray-500 rounded"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleBuy}
+                  onClick={() => onBuy()}
                   className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded"
                 >
                   Buy
                 </button>
               </footer>
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            <TabPanel value={state.value} index={1}>
               <header className="card-header"></header>
               <section className="card-body card-inv">
                 <div className="card-info ">
                   <div className="card-info-element">
                     <div className="buySellElement">
                       <img
-                        src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                        src={state.image}
                         alt="Image"
                         className="buySellImg"
                       />
@@ -263,14 +447,14 @@ export default function BuySellModal({
                         <div>
                           <div className="card-info-value">Coin Ticker:</div>
                           <div className="card-info-description">
-                            &nbsp;&nbsp;{symbol}
+                            &nbsp;&nbsp;{state.symbol}
                           </div>
                         </div>
                         <div>
                           <div className="card-info-value">Current Price:</div>
                           <div className="card-info-description">
-                            &nbsp;&nbsp;{pricetwo}
-                            <span>&nbsp;({twoFourHourChange}%)</span>
+                            &nbsp;&nbsp;{state.pricetwo}
+                            <span>&nbsp;({state.twoFourHourChange}%)</span>
                           </div>
                         </div>
                         <div>
@@ -278,7 +462,7 @@ export default function BuySellModal({
                             Coin Quantity On Hand:
                           </div>
                           <div className="card-info-description">
-                            &nbsp;&nbsp;{balance}
+                            &nbsp;&nbsp;{state.balance}
                           </div>
                         </div>
                       </div>
@@ -301,8 +485,8 @@ export default function BuySellModal({
                             InputLabelProps={{
                               shrink: true
                             }}
-                            error={error}
-                            helperText={error ? "Not Enough Balance" : ""}
+                            error={state.error}
+                            helperText={state.error ? "Not Enough Balance" : ""}
                             variant="outlined"
                             InputProps={{
                               endAdornment: (
@@ -310,24 +494,18 @@ export default function BuySellModal({
                                   style={{ textTransform: "uppercase" }}
                                   position="start"
                                 >
-                                  {symbol}
+                                  {state.symbol}
                                 </InputAdornment>
                               )
                             }}
                             type="number"
-                            value={sellCoin}
-                            onChange={e => {
-                              if (+e.target.value > +balance) {
-                                setError(true);
-                              } else {
-                                setSellAmount(props.price * +e.target.value);
-                                setNewBalance(+balance - +e.target.value);
-                                setError(false);
-                              }
-                              if (e.target.value > -1) {
-                                setSellCoin(+e.target.value);
-                              }
-                            }}
+                            value={state.sellCoin}
+                            onChange={e =>
+                              dispatch({
+                                type: "handleChangeQuantity",
+                                value: e.target.value
+                              })
+                            }
                           />
                         </div>
                       </div>
@@ -338,13 +516,16 @@ export default function BuySellModal({
               </section>
               <footer className="card-footer custom-foot foot-modal">
                 <button
-                  onClick={handleClose}
+                  onClick={() => {
+                    handleClose();
+                    dispatch({ type: "handleClose" });
+                  }}
                   className="bg-gray-600 hover:bg-gray-600 text-white font-bold py-2 px-4 border-b-4 border-gray-700 hover:border-gray-500 rounded"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleSell}
+                  onClick={() => onSell()}
                   className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded"
                 >
                   Sell
@@ -356,4 +537,17 @@ export default function BuySellModal({
       </div>
     </Modal>
   );
+}
+
+const rand = () => Math.round(Math.random() * 20) - 10;
+
+function getModalStyle() {
+  const top = 50 + rand();
+  const left = 50 + rand();
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`
+  };
 }

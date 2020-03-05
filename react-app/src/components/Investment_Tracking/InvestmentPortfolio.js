@@ -8,7 +8,7 @@ export default function InvestmentPortfolio() {
   });
   let coinList = {};
   const [coinLs, setCoinLs] = useState({});
-  const [rowDat, setRowDat] = useState([]);
+  // const [rowDat, setRowDat] = useState([]);
   const percentage = num => {
     return (Number(num) - Number(0.01)) * 100;
   };
@@ -76,7 +76,8 @@ export default function InvestmentPortfolio() {
         });
       };
     });
-  }, [rowDat]);
+    // }, [rowDat]);
+  }, []);
   return (
     <MaterialTable
       title=""

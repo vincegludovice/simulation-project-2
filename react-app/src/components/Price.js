@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import {
   ComposedChart,
   Line,
@@ -10,6 +9,8 @@ import {
   CartesianGrid,
   Tooltip
 } from "recharts";
+import { formatter, circulatingFormat } from "./Function";
+import { ChartRequest } from "./API/API";
 
 function CustomizedAxisTick({ x, y, payload }) {
   return (
@@ -27,13 +28,7 @@ function CustomizedAxisTick({ x, y, payload }) {
     </g>
   );
 }
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-  formatter,
-  circulatingFormat
-}) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active) {
     return (
       <div className="hover-custom-tooltip">
@@ -55,24 +50,20 @@ export default function Chart({ length, formatter, circulatingFormat }) {
   let { id } = useParams();
   const [historicalPrice, setHistoricalPrice] = useState();
   useEffect(() => {
-    axios
-      .get(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${length}`
-      )
-      .then(response => {
-        setHistoricalPrice(
-          response.data.prices.map((price, i) => {
-            return {
-              date:
-                length === "1"
-                  ? new Date(price[0]).toLocaleTimeString("en-US")
-                  : new Date(price[0]).toLocaleDateString("en-US"),
-              price: price[1],
-              volume: response.data.total_volumes[i][1]
-            };
-          })
-        );
-      });
+    ChartRequest(id, length).then(response => {
+      setHistoricalPrice(
+        response.data.prices.map((price, i) => {
+          return {
+            date:
+              length === "1"
+                ? new Date(price[0]).toLocaleTimeString("en-US")
+                : new Date(price[0]).toLocaleDateString("en-US"),
+            price: price[1],
+            volume: response.data.total_volumes[i][1]
+          };
+        })
+      );
+    });
   }, [id, length]);
   return (
     <ComposedChart

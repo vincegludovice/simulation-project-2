@@ -41,11 +41,6 @@ svg {
   line-height: 1.5;
   text-align: justify;
 }
-.svg-group {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-}
 
 .svg-blob {
   position: absolute;
@@ -66,21 +61,8 @@ svg {
   bottom: 0;
 }
 
-.bg-gradient {
-  background-image: linear-gradient(
-    to top right,
-    #a321c4 20%,
-    #3330e6 70%,
-    #6c63ff 100%
-  );
-}
-
 .msie .svg-wave {
   display: none;
-}
-
-.banner {
-  height: 100%;
 }
 
 .container {
@@ -154,20 +136,7 @@ ol {
   margin-left: -120px;
   margin-top: -120px;
 }
-.bitcoin {
-  top: 100px;
-  left: 50px;
-  position: absolute;
-  width: 200px;
-  z-index: 1;
-}
-.bitcoin2 {
-  top: 300px;
-  right: 50px;
-  position: absolute;
-  z-index: 1;
-  width: 200px;
-}
+
 .bit {
   position: absolute;
   bottom: 24px;

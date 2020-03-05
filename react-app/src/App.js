@@ -1,14 +1,15 @@
 import React from "react";
 import "./App.css";
-import Blob from "./components/Blob";
-import Waves from "./components/Waves";
+import Blob from "./Design/Blob";
+import Waves from "./Design/Waves";
 import Header from "./components/Header";
-import Img from "./components/Img";
+import Img from "./Design/Img";
+import style from "./style.module.css";
 
 export default function App() {
   return (
-    <div className="banner">
-      <div className="svg-group bg-gradient">
+    <div className={style.banner}>
+      <div className={style.svgGroup}>
         <Blob />
         <Waves />
         <Header />
