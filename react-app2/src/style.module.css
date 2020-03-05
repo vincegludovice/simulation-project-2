@@ -1,0 +1,56 @@
+/* App.js */
+.banner {
+  height: 100%;
+}
+.svgGroup {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background-image: linear-gradient(
+    to top right,
+    #a321c4 20%,
+    #3330e6 70%,
+    #6c63ff 100%
+  );
+}
+
+/* Header.js */
+.card {
+  display: flex;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.details {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+}
+.content {
+  flex: 1 0 auto;
+  padding-bottom: 0 !important;
+  padding-top: 4px !important;
+}
+.cover {
+  width: 70px;
+  padding-left: 10px;
+}
+.cover > img {
+  max-width: 100%;
+  height: auto;
+  padding-top: 6px;
+}
+/* Img.js */
+.bitcoin {
+  top: 100px;
+  left: 50px;
+  position: absolute;
+  width: 200px;
+  z-index: 1;
+}
+.bitcoin2 {
+  top: 300px;
+  right: 50px;
+  position: absolute;
+  z-index: 1;
+  width: 200px;
+}
