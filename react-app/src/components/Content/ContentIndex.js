@@ -82,6 +82,7 @@ export const circulatingFormat = num => {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 };
 export default function ContentIndex(props) {
+  console.log(props);
   const handleBuy = () => {
     if (amount) {
       axios
@@ -604,6 +605,7 @@ export default function ContentIndex(props) {
                                 type="number"
                                 value={sellCoin}
                                 onChange={e => {
+                                  console.log(props.price);
                                   if (+e.target.value > +balance) {
                                     setError(true);
                                   } else {
